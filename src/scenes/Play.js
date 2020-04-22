@@ -5,14 +5,14 @@ class Play extends Phaser.Scene {
 
     preload() {
         //load images/tile sprite
-        // this.load.image('player', './assets/rocket.png')
-        this.load.image('car', './assets/tempCar.png')
-        // this.load.image('enemy', './assets/spaceship.png')
-        // this.load.image('enemy2', './assets/starfield.png')
-        this.load.image('background', './assets/tempRoad.png')
+        // this.load.image('player', './assets/rocket.png');
+        this.load.image('car', './assets/tempCar.png');
+        this.load.image('enemy', './assets/bigTruck.png');
+        // this.load.image('enemy2', './assets/starfield.png');
+        this.load.image('background', './assets/tempRoad.png');
         this.load.audio('bgMusic', './assets/ToccataTechno.mp3');
-        // this.load.image('spear', './assets/starfield.png')
-        // this.load.image('barrel', './assets/starfield.png')
+        // this.load.image('spear', './assets/starfield.png');
+        // this.load.image('barrel', './assets/starfield.png');
         // this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
     }
 
@@ -22,6 +22,7 @@ class Play extends Phaser.Scene {
 
         //Array to keep track of cars
         this.carsArray = new Array();
+        this.enemyArray = new Array();
 
         let bgMusic = this.sound.add('bgMusic');
         bgMusic.play({
@@ -51,7 +52,7 @@ class Play extends Phaser.Scene {
         }
 
         scoreConfig.fixedWidth = 0;
-        this.clockDisplay = this.add.text(300, 42, "Time: " + this.game.settings.gameTimer, scoreConfig);
+        this.clockDisplay = this.add.text(game.config.width / 2, 42, "Time: " + this.game.settings.gameTimer, scoreConfig);
 
         //game over flag
         this.gameOver = false;
@@ -96,8 +97,58 @@ class Play extends Phaser.Scene {
                 // console.log((this.position/4) * game.config.width);
 
                 this.car = new Car(this, this.position, 0, "car", 0);
+                this.car.setScale(.8, .8);
 
                 this.carsArray.push(this.car);
+
+                //Example of how to reset clock with a new delay
+                // game.settings.carSpawnDelay = 1;
+                // this.carSpawner.reset({
+                //     delay: game.settings.carSpawnDelay,
+                //     callback: () => {
+                //         console.log("Timer went off faster");
+                //     },
+                //     loop: true,
+                // });
+            },
+            loop: true,
+        });
+
+        //TimerEvent in charge of spawning enemies after a set spawnDelay, loops indefinitely
+        this.enemySpawner = this.time.addEvent({
+            delay: game.settings.enemySpawnDelay,
+            callback: () => {
+                // console.log("Timer went off");
+
+                this.lane = Math.floor(Math.random() * (4 - 1 + 1) + 1);
+                // console.log("Lane " + this.lane);
+
+                //Switch deciding which what x position to put the car at
+                switch (this.lane) {
+                    case 1:
+                        this.position = 121;
+                        break;
+                    case 2:
+                        this.position = 322;
+                        break;
+                    case 3:
+                        this.position = 556;
+                        break;
+                    case 4:
+                        this.position = 759;
+                        break;
+                    default:
+                        console.log("Lane is out of bounds");
+                        break;
+
+                }
+
+                // console.log((this.position/4) * game.config.width);
+
+                this.enemy = new Enemy(this, this.position, 0, "enemy", 0);
+                this.enemy.setScale(1.5, 1.5);
+
+                this.enemyArray.push(this.enemy);
 
                 //Example of how to reset clock with a new delay
                 // game.settings.carSpawnDelay = 1;
@@ -119,6 +170,11 @@ class Play extends Phaser.Scene {
         //Loops through array of cars and update each one
         for (let i = 0; i < this.carsArray.length; i++) {
             this.carsArray[i].update();
+        }
+
+        //Loops through array of enemies and update each one
+        for (let j = 0; j < this.enemyArray.length; j++) {
+            this.enemyArray[j].update();
         }
 
         //check key input for restart
@@ -189,9 +245,22 @@ class Play extends Phaser.Scene {
             }
         }
 
-    }
-
-    spawnEnemy() {
+        //Despawn any enemies going off screen
+        for (let i = 0; i < this.enemyArray.length; i++) {
+            // console.log("In enemy despawn for loop");
+            //Once enemy has stopped, call the timer once for the enemy to pause it
+            if (!(this.enemyArray[i].goingDown) && !(this.enemyArray[i].calledTimer)) {
+                this.enemyArray[i].calledTimer = true;
+                this.pauseTimer = this.time.delayedCall(this.enemyArray[i].truckPauseTime, () => {
+                    this.enemyArray[i].goingUp = true;
+                }, null, this);
+            } else if (this.enemyArray[i].despawn) {
+                //Enemy is ready to despawn, destroy it
+                this.enemyArray[i].destroy(); //Destroy the enemy
+                console.log("Destroyed Enemy");
+                this.enemyArray.splice(i, 1); //Remove enemy from array of enemies
+            }
+        }
 
     }
 

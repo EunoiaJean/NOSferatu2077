@@ -14,6 +14,7 @@ game.settings = {
     gameTimer: 100000,
     backgroundScrollSpeed: 6,
     carSpawnDelay: 1000, //Car spawn delay in ms
+    enemySpawnDelay: 3000
 }
 
 let highScore = 0;
