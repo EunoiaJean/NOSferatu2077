@@ -5,17 +5,28 @@ class Play extends Phaser.Scene {
 
     preload() {
         //load images/tile sprite
-        this.load.image('player', './assets/rocket.png')
-        this.load.image('car', './assets/rocket2.png')
-        this.load.image('enemy', './assets/spaceship.png')
-        this.load.image('enemy2', './assets/starfield.png')
-        this.load.image('background', './assets/starfield.png')
-        this.load.image('spear', './assets/starfield.png')
-        this.load.image('barrel', './assets/starfield.png')
-        this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
+        // this.load.image('player', './assets/rocket.png')
+        this.load.image('car', './assets/tempCar.png')
+        // this.load.image('enemy', './assets/spaceship.png')
+        // this.load.image('enemy2', './assets/starfield.png')
+        this.load.image('background', './assets/tempRoad.png')
+        this.load.audio('bgMusic', './assets/ToccataTechno.mp3');
+        // this.load.image('spear', './assets/starfield.png')
+        // this.load.image('barrel', './assets/starfield.png')
+        // this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
     }
 
     create() {
+        //Place background
+        this.background = this.add.tileSprite(0, 0, game.config.width, game.config.height, "background").setOrigin(0, 0);
+
+        //Array to keep track of cars
+        this.carsArray = new Array();
+
+        let bgMusic = this.sound.add('bgMusic');
+        bgMusic.play({
+            loop: true,
+        });
 
         //Define keyboard keys
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -29,7 +40,7 @@ class Play extends Phaser.Scene {
         let scoreConfig = {
             fontFamily: "Courier",
             fontSize: "28px",
-            backgroundColor: "#F3B141",
+            backgroundColor: "#7476ad",
             color: "#843605",
             align: "right",
             padding: {
@@ -53,48 +64,90 @@ class Play extends Phaser.Scene {
             this.gameOver = true;
         }, null, this);
 
+        //TimerEvent in charge of spawning cars after a set spawnDelay, loops indefinitely
+        this.carSpawner = this.time.addEvent({
+            delay: game.settings.carSpawnDelay,
+            callback: () => {
+                // console.log("Timer went off");
+
+                this.lane = Math.floor(Math.random() * (4 - 1 + 1) + 1);
+                // console.log("Lane " + this.lane);
+
+                //Switch deciding which what x position to put the car at
+                switch (this.lane) {
+                    case 1:
+                        this.position = 121;
+                        break;
+                    case 2:
+                        this.position = 322;
+                        break;
+                    case 3:
+                        this.position = 556;
+                        break;
+                    case 4:
+                        this.position = 759;
+                        break;
+                    default:
+                        console.log("Lane is out of bounds");
+                        break;
+
+                }
+
+                // console.log((this.position/4) * game.config.width);
+
+                this.car = new Car(this, this.position, 0, "car", 0);
+
+                this.carsArray.push(this.car);
+
+                //Example of how to reset clock with a new delay
+                // game.settings.carSpawnDelay = 1;
+                // this.carSpawner.reset({
+                //     delay: game.settings.carSpawnDelay,
+                //     callback: () => {
+                //         console.log("Timer went off faster");
+                //     },
+                //     loop: true,
+                // });
+            },
+            loop: true,
+        });
+
     }
 
     update() {
-        //Speed increase after 30 seconds
-        if(Math.floor(this.clock.getElapsedSeconds() > 30)){
-            game.settings.spaceshipSpeed = 4;
+
+        //Loops through array of cars and update each one
+        for (let i = 0; i < this.carsArray.length; i++) {
+            this.carsArray[i].update();
         }
 
-        //check key input for restart\
-        this.topScore;
-        if (this.gameOver && Phaser.Input.Keyboard.JustDown(keySPACE)) {
-            if (this.p1Score > this.p2Score) {
-                this.topScore = this.p1Score;
-            } else {
-                this.topScore = this.p2Score;
+        //check key input for restart
+        if (this.gameOver) {
+            //Check if they beat high score
+            if (this.clockDisplay.text > highScore) {
+                highScore = this.clockDisplay.text;
+                console.log("New Highscore: " + highScore);
             }
-            console.log("Top Score: " + this.topScore);
-            if (this.topScore > highScore) {
-                highScore = this.topScore;
+            if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
+                this.scene.restart(this.p1Score);
+            } else if (Phaser.Input.Keyboard.JustDown(keyLEFT)) {
+                this.scene.start("menuScene");
             }
-            this.scene.restart(this.p1Score);
-        }
-        if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
-            if (this.p1Score > this.p2Score) {
-                this.topScore = this.p1Score;
-            } else {
-                this.topScore = this.p2Score;
-            }
-            console.log("Top Score: " + this.topScore);
-            if (this.topScore > highScore) {
-                highScore = this.topScore;
-            }
-            this.scene.start("menuScene");
         }
 
-        //Scroll starfield
-        
+        //Scroll background
+        this.background.tilePositionY -= game.settings.backgroundScrollSpeed;
 
         if (!this.gameOver) {
             //update sprites
-            
-            this.clockDisplay.setText((game.settings.gameTimer/1000) - Math.floor(this.clock.getElapsedSeconds()));
+
+            //Loops through array of cars and update each one
+            // for (let i = 0; i < this.carsArray.length; i++) {
+            //     this.carsArray[i].update();
+            // }
+
+            //Update timer text
+            this.clockDisplay.setText(Math.floor(this.clock.getElapsedSeconds()));
         }
 
         //Check P1 collisions
@@ -127,18 +180,31 @@ class Play extends Phaser.Scene {
             }
         }
 
+        //Despawn any cars going off screen
+        for (let i = 0; i < this.carsArray.length; i++) {
+            if (this.carsArray[i].y >= game.config.height + this.carsArray[i].height) {
+                this.carsArray[i].destroy(); //Destroy the car
+                // console.log("Destroyed Car");
+                this.carsArray.splice(i, 1); //Remove car from array of cars
+            }
+        }
+
+    }
+
+    spawnEnemy() {
+
     }
 
     checkCollision(rocket, ship) {
         //Simple AABB checking
-        if (rocket.x < ship.x + ship.width &&
-            rocket.x + rocket.width > ship.x &&
-            rocket.y < ship.y + ship.height &&
-            rocket.height + rocket.y > ship.y) {
-            return true;
-        } else {
-            return false;
-        }
+        // if (rocket.x < ship.x + ship.width &&
+        //     rocket.x + rocket.width > ship.x &&
+        //     rocket.y < ship.y + ship.height &&
+        //     rocket.height + rocket.y > ship.y) {
+        //     return true;
+        // } else {
+        //     return false;
+        // }
     }
 
     shipExplode(ship, rocket) {
@@ -163,7 +229,7 @@ class Play extends Phaser.Scene {
         }
 
 
-        this.sound.play('sfx_explosion');
+        // this.sound.play('sfx_explosion');
     }
 
 }
