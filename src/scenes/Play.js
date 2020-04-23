@@ -5,6 +5,7 @@ class Play extends Phaser.Scene {
 
     preload() {
         //load images/tile sprite
+<<<<<<< Updated upstream
         this.load.image('player', './assets/rocket.png')
         this.load.image('car', './assets/rocket2.png')
         this.load.image('enemy', './assets/spaceship.png')
@@ -13,17 +14,33 @@ class Play extends Phaser.Scene {
         this.load.image('spear', './assets/starfield.png')
         this.load.image('barrel', './assets/starfield.png')
         this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
+=======
+        this.load.image('player', './assets/player.png');
+        this.load.image('car', './assets/tempCar.png');
+        this.load.image('enemy', './assets/bigTruck.png');
+        // this.load.image('enemy2', './assets/starfield.png');
+        this.load.image('background', './assets/tempRoad.png');
+        this.load.audio('bgMusic', './assets/ToccataTechno.mp3');
+        // this.load.image('spear', './assets/starfield.png');
+        this.load.image('barrel', './assets/metalBarrel.png');
+        // this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
+>>>>>>> Stashed changes
     }
 
     create() {
 
+        this.p1 = new Player(this, 322, 600, 'player', 0, 0).setScale(0.2, 0.2).setOrigin(0.5,0.5);
+        this.curorKeys = this.input.keyboard.createCursorKeys();
+
         //Define keyboard keys
+        
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
 
         //score display
         let scoreConfig = {
