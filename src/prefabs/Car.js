@@ -25,7 +25,6 @@ class Car extends Phaser.GameObjects.Sprite {
                 console.log("Lane is out of bounds");
                 break;
         }
-
         this.x = this.position;
     }
 
