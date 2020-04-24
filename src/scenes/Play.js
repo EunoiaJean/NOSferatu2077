@@ -143,6 +143,8 @@ class Play extends Phaser.Scene {
 
         //collision checking
 
+        //not sure if I should delete from array because game should end at this point.
+
         //car
         for (let i = 0; i < this.carsArray.length; i++)
         {
