@@ -25,3 +25,17 @@ let roadPosition = 1;
 let roadRight = 4;
 let roadLeft = 1;
 let roadCenter = [0, 121, 322, 556, 759]
+
+//score display
+let scoreConfig = {
+    fontFamily: "Courier",
+    fontSize: "28px",
+    backgroundColor: "#7476ad",
+    color: "#843605",
+    align: "right",
+    padding: {
+        top: 5,
+        bottom: 5,
+    },
+    fixedWidth: 100
+}

@@ -17,20 +17,27 @@ class Play extends Phaser.Scene {
     }
 
     create() {
+
+        //initialize the physics engine.
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+
         //Place background
         this.background = this.add.tileSprite(0, 0, game.config.width, game.config.height, "background").setOrigin(0, 0);
 
         //Arrays to keep track of things and update them
         this.carsArray = new Array();
+        this.carGroup = this.game.add.group();
         this.enemyArray = new Array();
+        this.enemyGroup = this.game.add.group();
         this.barrelArray = new Array();
+        this.barrelGroup = this.game.add.group();
 
         let bgMusic = this.sound.add('bgMusic');
         bgMusic.play({
             loop: true,
         });
 
-        this.p1 = new Player(this, 322, 600, 'player', 0, 0).setScale(0.2, 0.2).setOrigin(0.5,0.5);
+        this.p1 = new Player(this, 322, 600, 'player', 0, 0).setScale(0.2, 0.2);
 
         //Define keyboard keys
         
@@ -42,19 +49,6 @@ class Play extends Phaser.Scene {
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
 
-        //score display
-        let scoreConfig = {
-            fontFamily: "Courier",
-            fontSize: "28px",
-            backgroundColor: "#7476ad",
-            color: "#843605",
-            align: "right",
-            padding: {
-                top: 5,
-                bottom: 5,
-            },
-            fixedWidth: 100
-        }
 
         scoreConfig.fixedWidth = 0;
         this.clockDisplay = this.add.text(game.config.width / 2, 42, "Time: " + this.game.settings.gameTimer, scoreConfig);
@@ -127,13 +121,14 @@ class Play extends Phaser.Scene {
                 highScore = this.clockDisplay.text;
                 console.log("New Highscore: " + highScore);
             }
+            this.add.text(game.config.width / 2, game.config.height / 2, "GAME OVER", scoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width / 2, game.config.height / 2 + 64, "Space to Restart or ← for Menu", scoreConfig).setOrigin(0.5);
             if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
                 this.scene.restart(this.p1Score);
             } else if (Phaser.Input.Keyboard.JustDown(keyLEFT)) {
                 this.scene.start("menuScene");
             }
         }
-
         //Scroll background
         this.background.tilePositionY -= game.settings.backgroundScrollSpeed;
 
@@ -145,18 +140,53 @@ class Play extends Phaser.Scene {
             this.clockDisplay.setText(Math.floor(this.clock.getElapsedSeconds()));
         }
 
-        //Check P1 collisions
-        if (this.checkCollision(this.p1, this.barrel)) {
-            this.p1Rocket.reset();
-            this.shipExplode(this.ship03, this.p1Rocket);
+
+        //collision checking
+
+        //car
+        for (let i = 0; i < this.carsArray.length; i++)
+        {
+            if (this.playerCarCollision(this.p1, this.carsArray[i])) {
+                console.log('car poop\n');
+                this.p1.destroy()
+                this.carsArray[i].destroy()
+                this.gameOver = true;
+            }
         }
-        if (this.checkCollision(this.p1, this.car)) {
-            this.p1Rocket.reset();
-            this.shipExplode(this.ship02, this.p1Rocket);
+
+        //enemy
+        for (let j = 0; j < this.enemyArray.length; j++)
+        {
+            if (this.playerEnemyCollision(this.p1, this.enemyArray[j])) {
+                console.log('enemy poop\n');
+                this.p1.destroy()
+                this.enemyArray[j].destroy()
+                this.gameOver = true;
+            }
         }
-        if (this.checkCollision(this.p1, this.ship01)) {
-            this.p1Rocket.reset();
-            this.shipExplode(this.ship01, this.p1Rocket);
+
+        //barrel
+        for (let k = 0; k < this.barrelArray.length; k++)
+        {
+            if (this.playerBarrelCollision(this.p1, this.barrelArray[k])) {
+                console.log('barrel poop\n');
+                this.p1.destroy()
+                this.barrelArray[k].destroy()
+                this.gameOver = true;
+            }
+        }
+        
+        //barrel hitting cars
+        for (let t = 0; t < this.barrelArray.length; t++)
+        {
+            for(let p = 0; p < this.carsArray.length; p ++)
+            {
+                if (this.barrelCarCollision(this.carsArray[p], this.barrelArray[t])) {
+                    console.log('barrel car poop\n');
+                    this.carsArray[p].destroy()
+                    this.barrelArray[t].destroy()
+                }
+            }
         }
 
         //Despawn any cars going off screen
@@ -195,19 +225,68 @@ class Play extends Phaser.Scene {
 
     }
 
-    checkCollision(rocket, ship) {
+    playerCarCollision(player, car) {
         //Simple AABB checking
-        // if (rocket.x < ship.x + ship.width &&
-        //     rocket.x + rocket.width > ship.x &&
-        //     rocket.y < ship.y + ship.height &&
-        //     rocket.height + rocket.y > ship.y) {
-        //     return true;
-        // } else {
-        //     return false;
-        // }
+        if (player.x < car.x + car.width &&
+            player.x + player.width > car.x &&
+            player.y < car.y + car.height &&
+            player.height + player.y > car.y) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    playerBarrelCollision(player, barrel) {
+        //Simple AABB checking
+        if (player.x < barrel.x + barrel.width &&
+            player.x + player.width > barrel.x &&
+            player.y < barrel.y + barrel.height &&
+            player.height + player.y > barrel.y) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    shipExplode(ship, rocket) {
+    playerEnemyCollision(player, enemy) {
+        //Simple AABB checking
+        if (player.x < enemy.x + enemy.width &&
+            player.x + player.width > enemy.x &&
+            player.y < enemy.y + enemy.height &&
+            player.height + player.y > enemy.y) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    barrelCarCollision(barrel, car) {
+        //Simple AABB checking
+        if (barrel.x < car.x + car.width &&
+            barrel.x + barrel.width > car.x &&
+            barrel.y < car.y + car.height &&
+            barrel.height + barrel.y > car.y) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    bikeExplode(ship, rocket) {
+        ship.alpha = 0;
+        //create explosion spire at ship's position
+        let boom = this.add.sprite(ship.x, ship.y, "explosion").setOrigin(0, 0);
+        boom.anims.play("explode");
+        boom.on("animationcomplete", () => {
+            ship.reset();
+            ship.alpha = 1;
+            boom.destroy();
+        });
+
+        // this.sound.play('sfx_explosion');
+    }
+    carExplode(ship, rocket) {
         ship.alpha = 0;
         //create explosion spire at ship's position
         let boom = this.add.sprite(ship.x, ship.y, "explosion").setOrigin(0, 0);
