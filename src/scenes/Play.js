@@ -19,18 +19,14 @@ class Play extends Phaser.Scene {
     create() {
 
         //initialize the physics engine.
-        game.physics.startSystem(Phaser.Physics.ARCADE);
 
         //Place background
         this.background = this.add.tileSprite(0, 0, game.config.width, game.config.height, "background").setOrigin(0, 0);
 
         //Arrays to keep track of things and update them
         this.carsArray = new Array();
-        this.carGroup = this.game.add.group();
         this.enemyArray = new Array();
-        this.enemyGroup = this.game.add.group();
         this.barrelArray = new Array();
-        this.barrelGroup = this.game.add.group();
 
         let bgMusic = this.sound.add('bgMusic');
         bgMusic.play({
