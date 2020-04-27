@@ -5,14 +5,16 @@ class Play extends Phaser.Scene {
 
     preload() {
         //load images/tile sprite
-        this.load.image('player', './assets/player.png');
-        this.load.image('car', './assets/tempCar.png');
-        this.load.image('enemy', './assets/bigTruck.png');
+        this.load.image('player', './assets/NOSinGame.png');
+        this.load.image('redCar', './assets/NOScarRed.png');
+        this.load.image('blueCar', './assets/NOScarBlue.png');
+        this.load.image('yellowCar', './assets/NOScarYellow.png');
+        this.load.image('enemy', './assets/barrelVan1.png');
         // this.load.image('enemy2', './assets/starfield.png');
         this.load.image('background', './assets/tempRoad.png');
         this.load.audio('bgMusic', './assets/ToccataTechno.mp3');
         // this.load.image('spear', './assets/starfield.png');
-        this.load.image('barrel', './assets/metalBarrel.png');
+        this.load.image('barrel', './assets/barrel.png');
         // this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
     }
 
@@ -72,19 +74,19 @@ class Play extends Phaser.Scene {
             callback: () => {
                 var color = Math.floor(Math.random() * (3 - 1 + 1) + 1);
                 if (color == 1) {
-                    this.car = new Car(this, this.position, 0, "car");
+                    this.car = new Car(this, this.position, 0, "redCar");
                     this.physics.add.existing(this.car);
                     this.car.body.setVelocityY(game.settings.carSpeed);
                     this.carGroup.add(this.car, true);
                 }
                 if (color == 2) {
-                    this.car = new Car(this, this.position, 0, "car");
+                    this.car = new Car(this, this.position, 0, "blueCar");
                     this.physics.add.existing(this.car);
                     this.car.body.setVelocityY(game.settings.carSpeed);
                     this.carGroup.add(this.car, true);
                 }
                 if (color == 3) {
-                    this.car = new Car(this, this.position, 0, "car");
+                    this.car = new Car(this, this.position, 0, "yellowCar");
                     this.physics.add.existing(this.car);
                     this.car.body.setVelocityY(game.settings.carSpeed);
                     this.carGroup.add(this.car, true);
