@@ -22,25 +22,21 @@ class Play extends Phaser.Scene {
         //Place background
         this.background = this.add.tileSprite(0, 0, game.config.width, game.config.height, "background").setOrigin(0, 0);
 
-        //Arrays to keep track of things and update them
-        this.carsArray = new Array();
-        this.enemyArray = new Array();
-        this.barrelArray = new Array();
-
+        //Groups to keep track of things and update them
+        this.carGroup = this.add.group();
+        // this.carsArray = new Array();
+        this.enemyGroup = this.add.group();
+        //this.enemyArray = new Array();
+        this.barrelGroup = this.add.group();
+        //this.barrelArray = new Array();
         let bgMusic = this.sound.add('bgMusic');
         bgMusic.play({
             loop: true,
         });
 
-        var atari = this.physics.add.image(200, 400, 'atari').setImmovable(true);
-        
-        this.p1 = new Player(this, 322, 600, 'player', 0, 0).setScale(0.05, 0.05);
-        console.log(this.p1.x);
-        console.log(this.p1.y);
-        console.log(this.p1.width);
-        console.log(this.p1.height);
+        this.p1 = new Player(this, 322, 600);
         //Define keyboard keys
-        
+
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
@@ -69,23 +65,23 @@ class Play extends Phaser.Scene {
             delay: game.settings.carSpawnDelay,
             callback: () => {
                 var color = Math.floor(Math.random() * (3 - 1 + 1) + 1);
-                if(color == 1)
-                {
-                    this.car = new Car(this, this.position, 0, "car", 0);
-                    this.car.setScale(.5, .5);
-                    this.carsArray.push(this.car);
+                if (color == 1) {
+                    this.car = new Car(this, this.position, 0, "car");
+                    this.physics.add.existing(this.car);
+                    this.car.body.setVelocityY(game.settings.carSpeed);
+                    this.carGroup.add(this.car, true);
                 }
-                if(color ==2)
-                {
-                    this.car = new Car(this, this.position, 0, "car", 0);
-                    this.car.setScale(.5, .5);
-                    this.carsArray.push(this.car);
+                if (color == 2) {
+                    this.car = new Car(this, this.position, 0, "car");
+                    this.physics.add.existing(this.car);
+                    this.car.body.setVelocityY(game.settings.carSpeed);
+                    this.carGroup.add(this.car, true);
                 }
-                if(color ==3)
-                {
-                    this.car = new Car(this, this.position, 0, "car", 0);
-                    this.car.setScale(.5, .5);
-                    this.carsArray.push(this.car);
+                if (color == 3) {
+                    this.car = new Car(this, this.position, 0, "car");
+                    this.physics.add.existing(this.car);
+                    this.car.body.setVelocityY(game.settings.carSpeed);
+                    this.carGroup.add(this.car, true);
                 }
 
                 //Example of how to reset this spawner with a new delay
@@ -97,6 +93,7 @@ class Play extends Phaser.Scene {
                 //     },
                 //     loop: true,
                 // });
+
             },
             loop: true,
         });
@@ -105,34 +102,74 @@ class Play extends Phaser.Scene {
         this.enemySpawner = this.time.addEvent({
             delay: game.settings.enemySpawnDelay,
             callback: () => {
-                this.enemy = new Enemy(this, this.position, 0, "enemy", 0);
-                this.enemy.setScale(1, 1);
-                this.enemyArray.push(this.enemy);
+                this.enemy = new Enemy(this, this.position, 0, "enemy");
+                this.enemyGroup.add(this.enemy, true);
             },
             loop: true,
         });
+
+        //ADD COLLISION
+        this.physics.add.collider(
+            this.p1,
+            this.carGroup,
+            function playerCarDelete(player, car) {
+                player.destroy();
+                console.log("poop");
+                car.destroy();
+                //gameOver = true;
+                //play explosion animation
+            });
+        this.physics.add.collider(
+            this.p1,
+            this.enemyGroup,
+            function playerEnemyDelete(player, enemy) {
+                player.destroy();
+                console.log("poop2");
+                enemy.destroy();
+                //gameOver = true;
+                //play explosion animation
+            }
+        );
+        this.physics.add.collider(this.p1,
+            this.barrelGroup,
+            function playerBarrelDelete(player, barrel) {
+                player.destroy();
+                console.log("poop3");
+                barrel.destroy();
+                //gameOver = true;
+                //play explosion animation
+            }
+        );
+        this.physics.add.collider(this.barrelGroup,
+            this.carGroup,
+            function barrelCarDelete(barrel, car) {
+                barrel.destroy();
+                car.destroy();
+                //play explosion animation
+            });
     }
 
     update() {
 
         //Loops through array of cars and update each one
-        for (let i = 0; i < this.carsArray.length; i++) {
-            this.carsArray[i].update();
+        for (let i = 0; i < this.carGroup.getLength(); i++) {
+            this.carGroup.getChildren()[i].update();
         }
 
         //Loops through array of enemies and update each one
-        for (let j = 0; j < this.enemyArray.length; j++) {
-            this.enemyArray[j].update();
+        for (let j = 0; j < this.enemyGroup.getLength(); j++) {
+            this.enemyGroup.getChildren()[j].update();
         }
 
         //Loops through array of barrels and update each one
-        for (let k = 0; k < this.barrelArray.length; k++) {
-            this.barrelArray[k].update();
+        for (let k = 0; k < this.barrelGroup.getLength(); k++) {
+            this.barrelGroup.getChildren()[k].update();
         }
 
         //check key input for restart
         if (this.gameOver) {
             //Check if they beat high score
+            console.log("what");
             if (this.clockDisplay.text > highScore) {
                 highScore = this.clockDisplay.text;
                 console.log("New Highscore: " + highScore);
@@ -162,127 +199,71 @@ class Play extends Phaser.Scene {
         //not sure if I should delete from array because game should end at this point.
 
         //car
-        for (let i = 0; i < this.carsArray.length; i++)
-        {
-            if (this.playerCarCollision(this.p1, this.carsArray[i])) {
-                this.p1.destroy()
-                this.carsArray[i].destroy()
-                this.gameOver = true;
-            }
-        }
+        //     for (let i = 0; i < this.carsArray.length; i++)
+        //     {
+        //         if (this.playerCarCollision(this.p1, this.carsArray[i])) {
+        //             this.p1.destroy()
+        //             this.carsArray[i].destroy()
+        //             this.gameOver = true;
+        //         }
+        //     }
 
-        //enemy
-        for (let j = 0; j < this.enemyArray.length; j++)
-        {
-            if (this.playerEnemyCollision(this.p1, this.enemyArray[j])) {
-                this.p1.destroy()
-                this.enemyArray[j].destroy()
-                this.gameOver = true;
-            }
-        }
+        //     //enemy
+        //     for (let j = 0; j < this.enemyArray.length; j++)
+        //     {
+        //         if (this.playerEnemyCollision(this.p1, this.enemyArray[j])) {
+        //             this.p1.destroy()
+        //             this.enemyArray[j].destroy()
+        //             this.gameOver = true;
+        //         }
+        //     }
 
-        //barrel
-        for (let k = 0; k < this.barrelArray.length; k++)
-        {
-            if (this.playerBarrelCollision(this.p1, this.barrelArray[k])) {
-                this.p1.destroy()
-                this.barrelArray[k].destroy()
-                this.gameOver = true;
-            }
-        }
-        
-        //barrel hitting cars
-        for (let t = 0; t < this.barrelArray.length; t++)
-        {
-            for(let p = 0; p < this.carsArray.length; p ++)
-            {
-                if (this.barrelCarCollision(this.carsArray[p], this.barrelArray[t])) {
-                    this.carsArray[p].destroy()
-                    this.barrelArray[t].destroy()
-                }
-            }
-        }
+        //     //barrel
+        //     for (let k = 0; k < this.barrelArray.length; k++)
+        //     {
+        //         if (this.playerBarrelCollision(this.p1, this.barrelArray[k])) {
+        //             this.p1.destroy()
+        //             this.barrelArray[k].destroy()
+        //             this.gameOver = true;
+        //         }
+        //     }
 
-        //Despawn any cars going off screen
-        for (let i = 0; i < this.carsArray.length; i++) {
-            if (this.carsArray[i].y >= game.config.height + this.carsArray[i].height) {
-                this.carsArray[i].destroy(); //Destroy the car
-                this.carsArray.splice(i, 1); //Remove car from array of cars
-            }
-        }
+        //     //barrel hitting cars
+        //     for (let t = 0; t < this.barrelArray.length; t++)
+        //     {
+        //         for(let p = 0; p < this.carsArray.length; p ++)
+        //         {
+        //             if (this.barrelCarCollision(this.carsArray[p], this.barrelArray[t])) {
+        //                 this.carsArray[p].destroy()
+        //                 this.barrelArray[t].destroy()
+        //             }
+        //         }
+        //     }
+
+        //     //Despawn any cars going off screen
+        //     for (let i = 0; i < this.carsArray.length; i++) {
+        //         if (this.carsArray[i].y >= game.config.height + this.carsArray[i].height) {
+        //             this.carsArray[i].destroy(); //Destroy the car
+        //             this.carsArray.splice(i, 1); //Remove car from array of cars
+        //         }
+        //     }
 
         //Despawn any enemies going off screen
-        for (let i = 0; i < this.enemyArray.length; i++) {
+        for (let i = 0; i < this.enemyGroup.getLength(); i++) {
             //Once enemy has stopped, call the timer once for the enemy to pause it
-            if (!(this.enemyArray[i].goingDown) && !(this.enemyArray[i].calledTimer)) {
-                this.enemyArray[i].calledTimer = true;
-                this.pauseTimer = this.time.delayedCall(this.enemyArray[i].truckPauseTime, () => {
-                    this.enemyArray[i].goingUp = true; //Set goingUp to true so enemy knows it can go up now
-                    this.barrel = new Barrel(this, this.enemyArray[i].x, this.enemyArray[i].y, "barrel", 0); //Spawn new barrel from enemy
-                    this.barrel.setScale(.7, .7);
-                    this.barrelArray.push(this.barrel); //Add barrel to barrelArray
+            if (!(this.enemyGroup.getChildren()[i].goingDown) && !(this.enemyGroup.getChildren()[i].calledTimer)) {
+                this.enemyGroup.getChildren()[i].calledTimer = true;
+                this.pauseTimer = this.time.delayedCall(this.enemyGroup.getChildren()[i].truckPauseTime, () => {
+                    this.enemyGroup.getChildren()[i].goingUp = true; //Set goingUp to true so enemy knows it can go up now
+                    this.barrel = new Barrel(this, this.enemyGroup.getChildren()[i].x, this.enemyGroup.getChildren()[i].y, "barrel"); //Spawn new barrel from enemy
+                    this.physics.add.existing(this.barrel);
+                    this.barrel.body.setVelocityY(game.settings.carSpeed + 50);
+                    this.barrelGroup.add(this.barrel, true); //Add barrel to barrelArray
                 }, null, this);
-            } else if (this.enemyArray[i].despawn) {
+            } else if (this.enemyGroup.getChildren()[i].despawn) {
                 //Enemy is ready to despawn, destroy it
-                this.enemyArray[i].destroy(); //Destroy the enemy
-                this.enemyArray.splice(i, 1); //Remove enemy from array of enemies
+                this.enemyGroup.remove(this.enemyGroup.getChildren()[i], true, true);
             }
-        }
-
-        //Despawn any barrels going off screen
-        for (let i = 0; i < this.barrelArray.length; i++) {
-            if (this.barrelArray[i].y >= game.config.height + this.barrelArray[i].height) {
-                this.barrelArray[i].destroy(); //Destroy the barrel
-                this.barrelArray.splice(i, 1); //Remove barrel from array of barrels
-            }
-        }
-
-    }
-
-    playerCarCollision(player, car) {
-        //Simple AABB checking
-        if (player.x < car.x + car.width &&
-            player.x + player.width > car.x &&
-            player.y < car.y + car.height &&
-            player.height + player.y > car.y) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    playerBarrelCollision(player, barrel) {
-        //Simple AABB checking
-        if (player.x < barrel.x + barrel.width &&
-            player.x + player.width > barrel.x &&
-            player.y < barrel.y + barrel.height &&
-            player.height + player.y > barrel.y) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    playerEnemyCollision(player, enemy) {
-        //Simple AABB checking
-        if (player.x < enemy.x + enemy.width &&
-            player.x + player.width > enemy.x &&
-            player.y < enemy.y + enemy.height &&
-            player.height + player.y > enemy.y) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    barrelCarCollision(barrel, car) {
-        //Simple AABB checking
-        if (barrel.x < car.x + car.width &&
-            barrel.x + barrel.width > car.x &&
-            barrel.y < car.y + car.height &&
-            barrel.height + barrel.y > car.y) {
-            return true;
-        } else {
-            return false;
         }
     }
 

@@ -1,7 +1,7 @@
 //Enemy prefab
-class Enemy extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, texture, frame) {
-        super(scene, x, y, texture, frame);
+class Enemy extends Phaser.Physics.Arcade.Sprite {
+    constructor(scene, x, y) {
+        super(scene, x, y, 'enemy');
 
         scene.add.existing(this); //Add object to the existing scene,displayList, updateList
 
@@ -10,6 +10,7 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.goingDown = true;
         this.goingUp = false;
         this.calledTimer = false;
+        this.setScale(1, 1);
 
         this.lane = Math.floor(Math.random() * (4 - 1 + 1) + 1);
 

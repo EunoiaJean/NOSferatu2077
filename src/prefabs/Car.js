@@ -1,7 +1,7 @@
 //Car prefab
 class Car extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, texture, frame) {
-        super(scene, x, y, texture, frame);
+    constructor(scene, x, y) {
+        super(scene, x, y, 'car');
 
         scene.add.existing(this); //Add object to the existing scene,displayList, updateList
 
@@ -29,7 +29,5 @@ class Car extends Phaser.GameObjects.Sprite {
     }
 
     update() {
-        //Move car down
-        this.y += game.settings.backgroundScrollSpeed + 3;
     }
 }
