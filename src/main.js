@@ -1,9 +1,24 @@
+//Communicate how to play w/ clear instructions (5)
+//animated character use a texture atlas
+//MAYBE collision detection (MAYBE CHANGE IT TO ARCADE MAYBE)
+//sound effects
+//delayed event 
+//
+
+
+
 
 let config = 
 {
     type: Phaser.CANVAS,
     width: 870,
     height: 900,
+    physics: {
+        default: 'arcade',
+        arcade: {
+            debug: true
+        }
+    },
     scene: [ Menu, Play],
 };
 

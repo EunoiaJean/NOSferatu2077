@@ -18,7 +18,6 @@ class Play extends Phaser.Scene {
 
     create() {
 
-        //initialize the physics engine.
 
         //Place background
         this.background = this.add.tileSprite(0, 0, game.config.width, game.config.height, "background").setOrigin(0, 0);
@@ -33,8 +32,13 @@ class Play extends Phaser.Scene {
             loop: true,
         });
 
-        this.p1 = new Player(this, 322, 600, 'player', 0, 0).setScale(0.2, 0.2);
-
+        var atari = this.physics.add.image(200, 400, 'atari').setImmovable(true);
+        
+        this.p1 = new Player(this, 322, 600, 'player', 0, 0).setScale(0.05, 0.05);
+        console.log(this.p1.x);
+        console.log(this.p1.y);
+        console.log(this.p1.width);
+        console.log(this.p1.height);
         //Define keyboard keys
         
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -64,9 +68,25 @@ class Play extends Phaser.Scene {
         this.carSpawner = this.time.addEvent({
             delay: game.settings.carSpawnDelay,
             callback: () => {
-                this.car = new Car(this, this.position, 0, "car", 0);
-                this.car.setScale(.8, .8);
-                this.carsArray.push(this.car);
+                var color = Math.floor(Math.random() * (3 - 1 + 1) + 1);
+                if(color == 1)
+                {
+                    this.car = new Car(this, this.position, 0, "car", 0);
+                    this.car.setScale(.5, .5);
+                    this.carsArray.push(this.car);
+                }
+                if(color ==2)
+                {
+                    this.car = new Car(this, this.position, 0, "car", 0);
+                    this.car.setScale(.5, .5);
+                    this.carsArray.push(this.car);
+                }
+                if(color ==3)
+                {
+                    this.car = new Car(this, this.position, 0, "car", 0);
+                    this.car.setScale(.5, .5);
+                    this.carsArray.push(this.car);
+                }
 
                 //Example of how to reset this spawner with a new delay
                 // game.settings.carSpawnDelay = 1;
@@ -86,7 +106,7 @@ class Play extends Phaser.Scene {
             delay: game.settings.enemySpawnDelay,
             callback: () => {
                 this.enemy = new Enemy(this, this.position, 0, "enemy", 0);
-                this.enemy.setScale(1.5, 1.5);
+                this.enemy.setScale(1, 1);
                 this.enemyArray.push(this.enemy);
             },
             loop: true,
@@ -145,7 +165,6 @@ class Play extends Phaser.Scene {
         for (let i = 0; i < this.carsArray.length; i++)
         {
             if (this.playerCarCollision(this.p1, this.carsArray[i])) {
-                console.log('car poop\n');
                 this.p1.destroy()
                 this.carsArray[i].destroy()
                 this.gameOver = true;
@@ -156,7 +175,6 @@ class Play extends Phaser.Scene {
         for (let j = 0; j < this.enemyArray.length; j++)
         {
             if (this.playerEnemyCollision(this.p1, this.enemyArray[j])) {
-                console.log('enemy poop\n');
                 this.p1.destroy()
                 this.enemyArray[j].destroy()
                 this.gameOver = true;
@@ -167,7 +185,6 @@ class Play extends Phaser.Scene {
         for (let k = 0; k < this.barrelArray.length; k++)
         {
             if (this.playerBarrelCollision(this.p1, this.barrelArray[k])) {
-                console.log('barrel poop\n');
                 this.p1.destroy()
                 this.barrelArray[k].destroy()
                 this.gameOver = true;
@@ -180,7 +197,6 @@ class Play extends Phaser.Scene {
             for(let p = 0; p < this.carsArray.length; p ++)
             {
                 if (this.barrelCarCollision(this.carsArray[p], this.barrelArray[t])) {
-                    console.log('barrel car poop\n');
                     this.carsArray[p].destroy()
                     this.barrelArray[t].destroy()
                 }
