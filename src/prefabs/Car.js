@@ -1,9 +1,11 @@
 //Car prefab
-class Car extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, texture, frame) {
-        super(scene, x, y, texture, frame);
+class Car extends Phaser.Physics.Arcade.Sprite {
+    constructor(scene, x, y, texture) {
+        super(scene, x, y, texture);
 
+        scene.physics.add.existing(this);
         scene.add.existing(this); //Add object to the existing scene,displayList, updateList
+        this.setScale(2);
 
         this.lane = Math.floor(Math.random() * (4 - 1 + 1) + 1); //Choose random lane between 1 and 4
 
@@ -29,7 +31,5 @@ class Car extends Phaser.GameObjects.Sprite {
     }
 
     update() {
-        //Move car down
-        this.y += game.settings.backgroundScrollSpeed + 3;
     }
 }

@@ -1,12 +1,8 @@
 //Communicate how to play w/ clear instructions (5)
 //animated character use a texture atlas
-//MAYBE collision detection (MAYBE CHANGE IT TO ARCADE MAYBE)
 //sound effects
-//delayed event 
+//delayed event for time
 //
-
-
-
 
 let config = 
 {
@@ -16,7 +12,11 @@ let config =
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true
+            debug: true,
+            gravity: {
+                x: 0,
+                y: 0
+            }
         }
     },
     scene: [ Menu, Play],
@@ -30,6 +30,7 @@ game.settings = {
     backgroundScrollSpeed: 6, //Speed background goes by
     carSpawnDelay: 1000, //Car spawn delay in ms
     enemySpawnDelay: 3000, //Delay between spawning enemies
+    carSpeed: 400,
 }
 
 let highScore = 0;
