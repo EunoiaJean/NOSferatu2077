@@ -1,12 +1,8 @@
 //Communicate how to play w/ clear instructions (5)
 //animated character use a texture atlas
-//MAYBE collision detection (MAYBE CHANGE IT TO ARCADE MAYBE)
 //sound effects
 //delayed event for time
 //
-
-
-
 
 let config = 
 {

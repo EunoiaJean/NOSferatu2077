@@ -3,6 +3,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
         super(scene, x, y, 'enemy');
 
+        scene.physics.add.existing(this);
         scene.add.existing(this); //Add object to the existing scene,displayList, updateList
 
         this.despawn = false;
@@ -45,7 +46,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
             this.despawn = true;
         } else if (this.y >= 0 && this.goingUp) {
             //Play scene called the timer and waited, not move enemy back up
-            console.log("Fps: " + game.loop.actualFps); //Possible problem with enemy moving fast because of fps
+            // console.log("Fps: " + game.loop.actualFps); //Possible problem with enemy moving fast because of fps
             this.y -= (game.settings.backgroundScrollSpeed + 3);
         } else {
             //Come here from first if, set goingDown to false so the Play scene knows to start

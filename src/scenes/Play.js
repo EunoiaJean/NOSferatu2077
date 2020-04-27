@@ -23,12 +23,18 @@ class Play extends Phaser.Scene {
         this.background = this.add.tileSprite(0, 0, game.config.width, game.config.height, "background").setOrigin(0, 0);
 
         //Groups to keep track of things and update them
-        this.carGroup = this.add.group();
-        // this.carsArray = new Array();
-        this.enemyGroup = this.add.group();
-        //this.enemyArray = new Array();
-        this.barrelGroup = this.add.group();
-        //this.barrelArray = new Array();
+        this.carGroup = this.add.group({
+            runChildUpdate: true
+        });
+
+        this.enemyGroup = this.add.group({
+            runChildUpdate: true
+        });
+
+        this.barrelGroup = this.add.group({
+            runChildUpdate: true
+        });
+
         let bgMusic = this.sound.add('bgMusic');
         bgMusic.play({
             loop: true,
@@ -109,67 +115,18 @@ class Play extends Phaser.Scene {
         });
 
         //ADD COLLISION
-        this.physics.add.collider(
-            this.p1,
-            this.carGroup,
-            function playerCarDelete(player, car) {
-                player.destroy();
-                console.log("poop");
-                car.destroy();
-                //gameOver = true;
-                //play explosion animation
-            });
-        this.physics.add.collider(
-            this.p1,
-            this.enemyGroup,
-            function playerEnemyDelete(player, enemy) {
-                player.destroy();
-                console.log("poop2");
-                enemy.destroy();
-                //gameOver = true;
-                //play explosion animation
-            }
-        );
-        this.physics.add.collider(this.p1,
-            this.barrelGroup,
-            function playerBarrelDelete(player, barrel) {
-                player.destroy();
-                console.log("poop3");
-                barrel.destroy();
-                //gameOver = true;
-                //play explosion animation
-            }
-        );
-        this.physics.add.collider(this.barrelGroup,
-            this.carGroup,
-            function barrelCarDelete(barrel, car) {
-                barrel.destroy();
-                car.destroy();
-                //play explosion animation
-            });
+
+        this.physics.add.overlap(this.p1, this.carGroup, this.playerEnemyCollision, null, this);
+        this.physics.add.overlap(this.p1, this.enemyGroup, this.playerEnemyCollision, null, this);
+        this.physics.add.overlap(this.p1, this.barrelGroup, this.playerEnemyCollision, null, this);
+        this.physics.add.overlap(this.carGroup, this.barrelGroup, this.EnemyEnemyCollision, null, this);
     }
 
     update() {
 
-        //Loops through array of cars and update each one
-        for (let i = 0; i < this.carGroup.getLength(); i++) {
-            this.carGroup.getChildren()[i].update();
-        }
-
-        //Loops through array of enemies and update each one
-        for (let j = 0; j < this.enemyGroup.getLength(); j++) {
-            this.enemyGroup.getChildren()[j].update();
-        }
-
-        //Loops through array of barrels and update each one
-        for (let k = 0; k < this.barrelGroup.getLength(); k++) {
-            this.barrelGroup.getChildren()[k].update();
-        }
-
         //check key input for restart
         if (this.gameOver) {
             //Check if they beat high score
-            console.log("what");
             if (this.clockDisplay.text > highScore) {
                 highScore = this.clockDisplay.text;
                 console.log("New Highscore: " + highScore);
@@ -193,61 +150,6 @@ class Play extends Phaser.Scene {
             this.clockDisplay.setText(Math.floor(this.clock.getElapsedSeconds()));
         }
 
-
-        //collision checking
-
-        //not sure if I should delete from array because game should end at this point.
-
-        //car
-        //     for (let i = 0; i < this.carsArray.length; i++)
-        //     {
-        //         if (this.playerCarCollision(this.p1, this.carsArray[i])) {
-        //             this.p1.destroy()
-        //             this.carsArray[i].destroy()
-        //             this.gameOver = true;
-        //         }
-        //     }
-
-        //     //enemy
-        //     for (let j = 0; j < this.enemyArray.length; j++)
-        //     {
-        //         if (this.playerEnemyCollision(this.p1, this.enemyArray[j])) {
-        //             this.p1.destroy()
-        //             this.enemyArray[j].destroy()
-        //             this.gameOver = true;
-        //         }
-        //     }
-
-        //     //barrel
-        //     for (let k = 0; k < this.barrelArray.length; k++)
-        //     {
-        //         if (this.playerBarrelCollision(this.p1, this.barrelArray[k])) {
-        //             this.p1.destroy()
-        //             this.barrelArray[k].destroy()
-        //             this.gameOver = true;
-        //         }
-        //     }
-
-        //     //barrel hitting cars
-        //     for (let t = 0; t < this.barrelArray.length; t++)
-        //     {
-        //         for(let p = 0; p < this.carsArray.length; p ++)
-        //         {
-        //             if (this.barrelCarCollision(this.carsArray[p], this.barrelArray[t])) {
-        //                 this.carsArray[p].destroy()
-        //                 this.barrelArray[t].destroy()
-        //             }
-        //         }
-        //     }
-
-        //     //Despawn any cars going off screen
-        //     for (let i = 0; i < this.carsArray.length; i++) {
-        //         if (this.carsArray[i].y >= game.config.height + this.carsArray[i].height) {
-        //             this.carsArray[i].destroy(); //Destroy the car
-        //             this.carsArray.splice(i, 1); //Remove car from array of cars
-        //         }
-        //     }
-
         //Despawn any enemies going off screen
         for (let i = 0; i < this.enemyGroup.getLength(); i++) {
             //Once enemy has stopped, call the timer once for the enemy to pause it
@@ -265,8 +167,35 @@ class Play extends Phaser.Scene {
                 this.enemyGroup.remove(this.enemyGroup.getChildren()[i], true, true);
             }
         }
+
+        //Despawn cars going off screen
+        for(let j = 0; j < this.carGroup.getLength(); j++){
+            if(this.carGroup.getChildren()[j].y > game.config.height + this.carGroup.getChildren()[j].height){
+                this.carGroup.remove(this.carGroup.getChildren()[j], true, true);
+            }
+        }
+
+        //Despawn barrels going off screen
+        for(let k = 0; k < this.barrelGroup.getLength(); k++){
+            if(this.barrelGroup.getChildren()[k].y > game.config.height + this.barrelGroup.getChildren()[k].height){
+                this.barrelGroup.remove(this.barrelGroup.getChildren()[k], true, true);
+            }
+        }
+
     }
 
+    playerEnemyCollision(player, object) {
+        player.destroy();
+        object.destroy();
+        this.gameOver = true;
+        //play explosion animation
+    }
+
+    EnemyEnemyCollision(enemy1, enemy2) {
+        enemy1.destroy();
+        enemy2.destroy();
+        //play explosion animation
+    }
 
     bikeExplode(ship, rocket) {
         ship.alpha = 0;
