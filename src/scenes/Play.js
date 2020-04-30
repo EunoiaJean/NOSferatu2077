@@ -1,6 +1,11 @@
 class Play extends Phaser.Scene {
     constructor() {
         super("playScene");
+
+        this.increasedDifficulty1 = false;
+        this.increasedDifficulty2 = false;
+        this.increasedDifficulty3 = false;
+
     }
 
     preload() {
@@ -22,10 +27,10 @@ class Play extends Phaser.Scene {
     }
 
     create() {
-        console.log(localStorage.getItem("highScore"));
+        console.log("Current Highscore: " + localStorage.getItem("highScore"));
 
         //Place background
-        this.background = this.add.tileSprite(0, 0, (game.config.width)/1.75, game.config.height, "background").setOrigin(0, 0);
+        this.background = this.add.tileSprite(0, 0, (game.config.width) / 1.75, game.config.height, "background").setOrigin(0, 0);
 
         //Groups to keep track of things and update them
         this.carGroup = this.add.group({
@@ -40,7 +45,7 @@ class Play extends Phaser.Scene {
             runChildUpdate: true
         });
 
-        let bgMusic = this.sound.add('bgMusic', {volume: 0.3});
+        let bgMusic = this.sound.add('bgMusic', { volume: 0.3 });
         bgMusic.play({
             loop: true,
         });
@@ -51,6 +56,8 @@ class Play extends Phaser.Scene {
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+        keyDOWN = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+        keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
         keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
@@ -63,7 +70,7 @@ class Play extends Phaser.Scene {
         //game over flag
         this.gameOver = false;
 
-        //60-second play clock
+        //play clock
         scoreConfig.fixedWidth = 0;
         this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
             this.add.text(game.config.width / 2, game.config.height / 2, "GAME OVER", scoreConfig).setOrigin(0.5);
@@ -75,36 +82,7 @@ class Play extends Phaser.Scene {
         this.carSpawner = this.time.addEvent({
             delay: game.settings.carSpawnDelay,
             callback: () => {
-                var color = Math.floor(Math.random() * (3 - 1 + 1) + 1);
-                if (color == 1) {
-                    this.car = new Car(this, this.position, 0, "redCar");
-                    this.physics.add.existing(this.car);
-                    this.car.body.setVelocityY(game.settings.carSpeed);
-                    this.carGroup.add(this.car, true);
-                }
-                if (color == 2) {
-                    this.car = new Car(this, this.position, 0, "blueCar");
-                    this.physics.add.existing(this.car);
-                    this.car.body.setVelocityY(game.settings.carSpeed);
-                    this.carGroup.add(this.car, true);
-                }
-                if (color == 3) {
-                    this.car = new Car(this, this.position, 0, "yellowCar");
-                    this.physics.add.existing(this.car);
-                    this.car.body.setVelocityY(game.settings.carSpeed);
-                    this.carGroup.add(this.car, true);
-                }
-
-                //Example of how to reset this spawner with a new delay
-                // game.settings.carSpawnDelay = 1;
-                // this.carSpawner.reset({
-                //     delay: game.settings.carSpawnDelay,
-                //     callback: () => {
-                //         console.log("Timer went off faster");
-                //     },
-                //     loop: true,
-                // });
-
+                this.spawnCar();
             },
             loop: true,
         });
@@ -132,7 +110,7 @@ class Play extends Phaser.Scene {
         //check key input for restart
         if (this.gameOver) {
             //Check if they beat high score
-            if (this.clockDisplay.text > highScore) {
+            if (parseInt(this.clockDisplay.text) > highScore) {
                 highScore = this.clockDisplay.text;
                 console.log("New Highscore: " + highScore);
                 localStorage.setItem("highScore", highScore);
@@ -188,10 +166,46 @@ class Play extends Phaser.Scene {
             }
         }
 
+        //Increase difficulty after set time
+        if (this.clockDisplay.text == game.settings.difficultyIncreaseTime1 && !(this.increasedDifficulty1)) {
+            console.log("Difficulty Increase 1");
+            this.increasedDifficulty1 = true;
+            game.settings.carSpawnDelay = 800;
+            this.carSpawner.reset({
+                delay: game.settings.carSpawnDelay,
+                callback: () => {
+                    this.spawnCar();
+                },
+                loop: true,
+            });
+        }
+
+        //Increase difficulty after set time 2
+        if (this.clockDisplay.text == game.settings.difficultyIncreaseTime2 && !(this.increasedDifficulty2)) {
+            console.log("Difficulty Increase 2");
+            this.increasedDifficulty2 = true;
+            game.settings.carSpeed = 800;
+        }
+
+        //Increase difficulty after set time 3
+        if (this.clockDisplay.text == game.settings.difficultyIncreaseTime3 && !(this.increasedDifficulty3)) {
+            console.log("Difficulty Increase 3");
+            this.increasedDifficulty3 = true;
+            game.settings.enemySpawnDelay = 3000;
+            this.enemySpawner.reset({
+                delay: game.settings.enemySpawnDelay,
+                callback: () => {
+                    this.enemy = new Enemy(this, this.position, 0, "enemy");
+                    this.enemyGroup.add(this.enemy, true);
+                },
+                loop: true,
+            });
+        }
+
     }
 
     playerEnemyCollision(player, object) {
-        let explosionSFX = this.sound.add('explosion', {volume: 0.25});
+        let explosionSFX = this.sound.add('explosion', { volume: 0.25 });
         explosionSFX.play();
         player.destroy();
         object.destroy();
@@ -200,7 +214,7 @@ class Play extends Phaser.Scene {
     }
 
     EnemyEnemyCollision(enemy1, enemy2) {
-        let explosionSFX = this.sound.add('explosion', {volume: 0.25});
+        let explosionSFX = this.sound.add('explosion', { volume: 0.25 });
         explosionSFX.play();
         enemy1.destroy();
         enemy2.destroy();
@@ -229,5 +243,27 @@ class Play extends Phaser.Scene {
             ship.alpha = 1;
             boom.destroy();
         });
+    }
+
+    spawnCar() {
+        var color = Math.floor(Math.random() * (3 - 1 + 1) + 1);
+        if (color == 1) {
+            this.car = new Car(this, this.position, 0, "redCar");
+            this.physics.add.existing(this.car);
+            this.car.body.setVelocityY(game.settings.carSpeed);
+            this.carGroup.add(this.car, true);
+        }
+        if (color == 2) {
+            this.car = new Car(this, this.position, 0, "blueCar");
+            this.physics.add.existing(this.car);
+            this.car.body.setVelocityY(game.settings.carSpeed);
+            this.carGroup.add(this.car, true);
+        }
+        if (color == 3) {
+            this.car = new Car(this, this.position, 0, "yellowCar");
+            this.physics.add.existing(this.car);
+            this.car.body.setVelocityY(game.settings.carSpeed);
+            this.carGroup.add(this.car, true);
+        }
     }
 }
