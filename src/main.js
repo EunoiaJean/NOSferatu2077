@@ -28,20 +28,24 @@ let game = new Phaser.Game(config);
 
 //define game settings
 game.settings = {
-    gameTimer: 100000, //Time until timer runs out, probably need to set really high so it never ends
+    gameTimer: 99999999999, //Time until timer runs out, probably need to set really high so it never ends
     backgroundScrollSpeed: 6, //Speed background goes by
     carSpawnDelay: 1000, //Car spawn delay in ms
-    enemySpawnDelay: 3000, //Delay between spawning enemies
+    enemySpawnDelay: 5000, //Delay between spawning enemies
     carSpeed: 400,
+    difficultyIncreaseTime1: 15,
+    difficultyIncreaseTime2: 30,
+    difficultyIncreaseTime3: 60,
 }
 
 let highScore = 0;
+// localStorage.clear();
 if(localStorage.getItem("highScore")){
     highScore = localStorage.getItem("highScore");
 }
 
 //Reserve some keyboard variables
-let keySPACE, keyLEFT, keyRIGHT, keyDOWN, keyW, keyA, keyD, keyS;
+let keySPACE, keyLEFT, keyRIGHT, keyDOWN, keyUP, keyW, keyA, keyD, keyS;
 let roadPosition = 2;
 let roadRight = 4;
 let roadLeft = 1;
