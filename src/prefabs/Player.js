@@ -34,10 +34,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         }
 
         if (keyW.isDown && this.y >= 50) {
-            this.y -= 10;
+            this.y -= 3;
         }
         else if (keyS.isDown && this.y <= 850) {
-            this.y += 10;
+            this.y += 3;
         }
     }
 
