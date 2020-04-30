@@ -1,8 +1,18 @@
 //Communicate how to play w/ clear instructions (5)
 //animated character use a texture atlas
 //sound effects
-//delayed event for time
-//
+
+
+//delayed event for time of the spawning
+//MAKE SURE TO FIX LOOPING IN MUSIC MAKE NEW SCENE IN BEGINNING FOR IT
+//instructions functionality
+//local storage for Best Time: during play.
+
+
+//animation playing during turning.
+
+
+
 
 let config = 
 {
@@ -19,7 +29,7 @@ let config =
             }
         }
     },
-    scene: [ Menu, Play],
+    scene: [Music, Menu, Play],
 };
 
 let game = new Phaser.Game(config);

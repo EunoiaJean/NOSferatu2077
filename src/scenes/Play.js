@@ -12,7 +12,6 @@ class Play extends Phaser.Scene {
         this.load.image('enemy', './assets/barrelVan1.png');
         // this.load.image('enemy2', './assets/starfield.png');
         this.load.image('background', './assets/tempRoad.png');
-        this.load.audio('bgMusic', './assets/ToccataTechno.mp3');
         // this.load.image('spear', './assets/starfield.png');
         this.load.image('barrel', './assets/barrel.png');
         // this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
@@ -35,11 +34,6 @@ class Play extends Phaser.Scene {
 
         this.barrelGroup = this.add.group({
             runChildUpdate: true
-        });
-
-        let bgMusic = this.sound.add('bgMusic');
-        bgMusic.play({
-            loop: true,
         });
 
         this.p1 = new Player(this, 322, 600);
