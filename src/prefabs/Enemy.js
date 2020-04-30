@@ -11,7 +11,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.goingDown = true;
         this.goingUp = false;
         this.calledTimer = false;
-        this.setScale(2);
+        this.setScale(2.5);
 
         this.lane = Math.floor(Math.random() * (4 - 1 + 1) + 1);
 

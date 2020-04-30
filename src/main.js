@@ -7,8 +7,10 @@
 let config = 
 {
     type: Phaser.CANVAS,
-    width: 870,
-    height: 900,
+    // width: 870,
+    width: window.innerWidth,
+    // height: 900,
+    height: window.innerHeight,
     physics: {
         default: 'arcade',
         arcade: {
@@ -34,10 +36,13 @@ game.settings = {
 }
 
 let highScore = 0;
+if(localStorage.getItem("highScore")){
+    highScore = localStorage.getItem("highScore");
+}
 
 //Reserve some keyboard variables
 let keySPACE, keyLEFT, keyRIGHT, keyDOWN, keyW, keyA, keyD, keyS;
-let roadPosition = 1;
+let roadPosition = 2;
 let roadRight = 4;
 let roadLeft = 1;
 let roadCenter = [0, 121, 322, 556, 759]

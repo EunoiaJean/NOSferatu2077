@@ -4,8 +4,8 @@ class Menu extends Phaser.Scene {
     }
 
     preload() {
-        //load audio
-
+        this.load.image('NOS', './assets/NOS.png');
+        this.load.image('bike', './assets/NOSbike.png');
     }
 
     create() {
@@ -31,6 +31,14 @@ class Menu extends Phaser.Scene {
 
         this.add.text(centerX, centerY - textSpacer, 'NOS-Feratu', menuConfig).setOrigin(0.5);
         this.add.text(centerX, centerY + 2 * textSpacer, 'Press Spacebar to Start', menuConfig).setOrigin(0.5);
+
+        //Show NOS and his bike
+        this.NOS = this.add.image(game.config.width/4, game.config.height/1.5, 'NOS');
+        this.NOS.setScale(4);
+
+        this.NOS = this.add.image(game.config.width/1.3, game.config.height/1.2, 'bike');
+        this.NOS.setScale(4);
+
 
         // define keys
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);

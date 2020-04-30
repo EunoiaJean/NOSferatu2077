@@ -6,6 +6,8 @@ class Play extends Phaser.Scene {
     preload() {
         //load images/tile sprite
         this.load.image('player', './assets/NOSinGame.png');
+        this.load.image('playerTurnLeft', './assets/NOSinGameLeftTurn.png');
+        this.load.image('playerTurnRight', './assets/NOSinGameRightTurn.png');
         this.load.image('redCar', './assets/NOScarRed.png');
         this.load.image('blueCar', './assets/NOScarBlue.png');
         this.load.image('yellowCar', './assets/NOScarYellow.png');
@@ -13,16 +15,17 @@ class Play extends Phaser.Scene {
         // this.load.image('enemy2', './assets/starfield.png');
         this.load.image('background', './assets/tempRoad.png');
         this.load.audio('bgMusic', './assets/ToccataTechno.mp3');
+        this.load.audio('explosion', './assets/explosion.mp3');
         // this.load.image('spear', './assets/starfield.png');
         this.load.image('barrel', './assets/barrel.png');
         // this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
     }
 
     create() {
-
+        console.log(localStorage.getItem("highScore"));
 
         //Place background
-        this.background = this.add.tileSprite(0, 0, game.config.width, game.config.height, "background").setOrigin(0, 0);
+        this.background = this.add.tileSprite(0, 0, (game.config.width)/1.75, game.config.height, "background").setOrigin(0, 0);
 
         //Groups to keep track of things and update them
         this.carGroup = this.add.group({
@@ -37,7 +40,7 @@ class Play extends Phaser.Scene {
             runChildUpdate: true
         });
 
-        let bgMusic = this.sound.add('bgMusic');
+        let bgMusic = this.sound.add('bgMusic', {volume: 0.3});
         bgMusic.play({
             loop: true,
         });
@@ -132,6 +135,7 @@ class Play extends Phaser.Scene {
             if (this.clockDisplay.text > highScore) {
                 highScore = this.clockDisplay.text;
                 console.log("New Highscore: " + highScore);
+                localStorage.setItem("highScore", highScore);
             }
             this.add.text(game.config.width / 2, game.config.height / 2, "GAME OVER", scoreConfig).setOrigin(0.5);
             this.add.text(game.config.width / 2, game.config.height / 2 + 64, "Space to Restart or ← for Menu", scoreConfig).setOrigin(0.5);
@@ -161,7 +165,7 @@ class Play extends Phaser.Scene {
                     this.enemyGroup.getChildren()[i].goingUp = true; //Set goingUp to true so enemy knows it can go up now
                     this.barrel = new Barrel(this, this.enemyGroup.getChildren()[i].x, this.enemyGroup.getChildren()[i].y, "barrel"); //Spawn new barrel from enemy
                     this.physics.add.existing(this.barrel);
-                    this.barrel.body.setVelocityY(game.settings.carSpeed + 50);
+                    this.barrel.body.setVelocityY(game.settings.carSpeed + 75);
                     this.barrelGroup.add(this.barrel, true); //Add barrel to barrelArray
                 }, null, this);
             } else if (this.enemyGroup.getChildren()[i].despawn) {
@@ -171,15 +175,15 @@ class Play extends Phaser.Scene {
         }
 
         //Despawn cars going off screen
-        for(let j = 0; j < this.carGroup.getLength(); j++){
-            if(this.carGroup.getChildren()[j].y > game.config.height + this.carGroup.getChildren()[j].height){
+        for (let j = 0; j < this.carGroup.getLength(); j++) {
+            if (this.carGroup.getChildren()[j].y > game.config.height + this.carGroup.getChildren()[j].height) {
                 this.carGroup.remove(this.carGroup.getChildren()[j], true, true);
             }
         }
 
         //Despawn barrels going off screen
-        for(let k = 0; k < this.barrelGroup.getLength(); k++){
-            if(this.barrelGroup.getChildren()[k].y > game.config.height + this.barrelGroup.getChildren()[k].height){
+        for (let k = 0; k < this.barrelGroup.getLength(); k++) {
+            if (this.barrelGroup.getChildren()[k].y > game.config.height + this.barrelGroup.getChildren()[k].height) {
                 this.barrelGroup.remove(this.barrelGroup.getChildren()[k], true, true);
             }
         }
@@ -187,6 +191,8 @@ class Play extends Phaser.Scene {
     }
 
     playerEnemyCollision(player, object) {
+        let explosionSFX = this.sound.add('explosion', {volume: 0.25});
+        explosionSFX.play();
         player.destroy();
         object.destroy();
         this.gameOver = true;
@@ -194,6 +200,8 @@ class Play extends Phaser.Scene {
     }
 
     EnemyEnemyCollision(enemy1, enemy2) {
+        let explosionSFX = this.sound.add('explosion', {volume: 0.25});
+        explosionSFX.play();
         enemy1.destroy();
         enemy2.destroy();
         //play explosion animation
@@ -210,7 +218,6 @@ class Play extends Phaser.Scene {
             boom.destroy();
         });
 
-        // this.sound.play('sfx_explosion');
     }
     carExplode(ship, rocket) {
         ship.alpha = 0;
@@ -222,8 +229,5 @@ class Play extends Phaser.Scene {
             ship.alpha = 1;
             boom.destroy();
         });
-
-        // this.sound.play('sfx_explosion');
     }
-
 }
