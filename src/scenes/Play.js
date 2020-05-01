@@ -24,6 +24,7 @@ class Play extends Phaser.Scene {
         // this.load.image('spear', './assets/starfield.png');
         this.load.image('barrel', './assets/barrel.png');
         // this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
+        this.load.atlas('barrelAtlas', './assets/barrel_atlas.png', 'barrel_atlas_atlas.json');
     }
 
     create() {
@@ -97,8 +98,9 @@ class Play extends Phaser.Scene {
             loop: true,
         });
 
-        //ADD COLLISION
+        
 
+        //ADD COLLISION
         this.physics.add.overlap(this.p1, this.carGroup, this.playerEnemyCollision, null, this);
         this.physics.add.overlap(this.p1, this.enemyGroup, this.playerEnemyCollision, null, this);
         this.physics.add.overlap(this.p1, this.barrelGroup, this.playerEnemyCollision, null, this);
