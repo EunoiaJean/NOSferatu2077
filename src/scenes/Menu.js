@@ -41,6 +41,14 @@ class Menu extends Phaser.Scene {
         this.NOS.setScale(4);
 
 
+        //Show NOS and his bike
+        this.NOS = this.add.image(game.config.width/4, game.config.height/1.5, 'NOS');
+        this.NOS.setScale(4);
+
+        this.NOS = this.add.image(game.config.width/1.3, game.config.height/1.2, 'bike');
+        this.NOS.setScale(4);
+
+
         // define keys
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);

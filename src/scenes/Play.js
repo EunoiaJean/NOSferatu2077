@@ -28,7 +28,6 @@ class Play extends Phaser.Scene {
 
     create() {
         console.log("Current Highscore: " + localStorage.getItem("highScore"));
-
         let playing = false;
         //Place background
         this.background = this.add.tileSprite(0, 0, (game.config.width) / 1.75, game.config.height, "background").setOrigin(0, 0);
