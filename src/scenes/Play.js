@@ -28,7 +28,7 @@ class Play extends Phaser.Scene {
 
     create() {
         console.log("Current Highscore: " + localStorage.getItem("highScore"));
-
+        let playing = false;
         //Place background
         this.background = this.add.tileSprite(0, 0, (game.config.width) / 1.75, game.config.height, "background").setOrigin(0, 0);
 
@@ -44,9 +44,8 @@ class Play extends Phaser.Scene {
         this.barrelGroup = this.add.group({
             runChildUpdate: true
         });
-
-        let bgMusic = this.sound.add('bgMusic', { volume: 0.3 });
-        bgMusic.play({
+        this.bgMusic = this.sound.add('bgMusic', { volume: 0.3 });
+        this.bgMusic.play({
             loop: true,
         });
 
@@ -63,10 +62,9 @@ class Play extends Phaser.Scene {
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
 
-
         scoreConfig.fixedWidth = 0;
         this.clockDisplay = this.add.text(game.config.width / 2, 42, "Time: " + this.game.settings.gameTimer, scoreConfig);
-
+        this.highestScore = this.add.text(game.config.width / 2, 42+64, "Current Highscore: " + localStorage.getItem("highScore"), scoreConfig).setOrigin(0.5);
         //game over flag
         this.gameOver = false;
 
@@ -88,14 +86,15 @@ class Play extends Phaser.Scene {
         });
 
         //TimerEvent in charge of spawning enemies after a set spawnDelay, loops indefinitely
-        this.enemySpawner = this.time.addEvent({
-            delay: game.settings.enemySpawnDelay,
-            callback: () => {
-                this.enemy = new Enemy(this, this.position, 0, "enemy");
-                this.enemyGroup.add(this.enemy, true);
-            },
-            loop: true,
-        });
+        let firstSpawn = this.time.delayedCall(15000, () => {
+            this.enemySpawner = this.time.addEvent({
+           delay: game.settings.enemySpawnDelay,
+           callback: () => {
+               this.enemy = new Enemy(this, this.position, 0, "enemy");
+               this.enemyGroup.add(this.enemy, true);
+           },
+           loop: true,
+       }); }, null, this)
 
         //ADD COLLISION
 
@@ -118,6 +117,7 @@ class Play extends Phaser.Scene {
             this.add.text(game.config.width / 2, game.config.height / 2, "GAME OVER", scoreConfig).setOrigin(0.5);
             this.add.text(game.config.width / 2, game.config.height / 2 + 64, "Space to Restart or ← for Menu", scoreConfig).setOrigin(0.5);
             if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
+                this.bgMusic.destroy();
                 this.scene.restart(this.p1Score);
             } else if (Phaser.Input.Keyboard.JustDown(keyLEFT)) {
                 this.scene.start("menuScene");
@@ -129,6 +129,13 @@ class Play extends Phaser.Scene {
         if (!this.gameOver) {
             //update sprites here if you want them to pause on game over
             this.p1.update();
+
+            if (parseInt(this.clockDisplay.text) > highScore) {
+                highScore = this.clockDisplay.text;
+                console.log("New Highscore: " + highScore);
+                localStorage.setItem("highScore", highScore);
+                this.highestScore.setText("Current Highscore: " + localStorage.getItem("highScore"));
+            }
 
             //Update timer text
             this.clockDisplay.setText(Math.floor(this.clock.getElapsedSeconds()));
