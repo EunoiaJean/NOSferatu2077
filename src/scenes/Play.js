@@ -22,9 +22,9 @@ class Play extends Phaser.Scene {
         this.load.audio('bgMusic', './assets/ToccataTechno.mp3');
         this.load.audio('explosion', './assets/explosion.mp3');
         // this.load.image('spear', './assets/starfield.png');
-        this.load.image('barrel', './assets/barrel.png');
+        this.load.image('barrel', './assets/barrel1.png');
         // this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
-        this.load.atlas('barrelAtlas', './assets/barrel_atlas.png', 'barrel_atlas_atlas.json');
+        this.load.atlas('barrelAtlas', './assets/barrel_roll.png', './assets/barrel_roll_atlas.json');
     }
 
     create() {
@@ -98,7 +98,17 @@ class Play extends Phaser.Scene {
             loop: true,
         });
 
-        
+        this.anims.create({
+            key: 'barrelRoll',
+            frameRate: 10,
+            frames: this.anims.generateFrameNames('barrelAtlas', {
+                prefix: 'barrel',
+                start: 1,
+                end: 3,
+                zeropad: 1,
+            }),
+            repeat: -1,
+        });
 
         //ADD COLLISION
         this.physics.add.overlap(this.p1, this.carGroup, this.playerEnemyCollision, null, this);
@@ -143,9 +153,14 @@ class Play extends Phaser.Scene {
                 this.enemyGroup.getChildren()[i].calledTimer = true;
                 this.pauseTimer = this.time.delayedCall(this.enemyGroup.getChildren()[i].truckPauseTime, () => {
                     this.enemyGroup.getChildren()[i].goingUp = true; //Set goingUp to true so enemy knows it can go up now
-                    this.barrel = new Barrel(this, this.enemyGroup.getChildren()[i].x, this.enemyGroup.getChildren()[i].y, "barrel"); //Spawn new barrel from enemy
+                    this.barrel = new Barrel(this, this.enemyGroup.getChildren()[i].x, this.enemyGroup.getChildren()[i].y, "barrelAtlas", 'barrel1.png'); //Spawn new barrel from enemy
+                    this.barrel.play('barrelRoll');
                     this.physics.add.existing(this.barrel);
                     this.barrel.body.setVelocityY(game.settings.carSpeed + 75);
+
+                    //this.barrel.anims.add('rolling', this.anims.generateFrameNames('barrel', 1, 3), 5, true);
+                    
+
                     this.barrelGroup.add(this.barrel, true); //Add barrel to barrelArray
                 }, null, this);
             } else if (this.enemyGroup.getChildren()[i].despawn) {
