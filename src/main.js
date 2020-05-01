@@ -21,7 +21,7 @@ let config =
             }
         }
     },
-    scene: [ Menu, Play],
+    scene: [ Menu, Instructions, Play],
 };
 
 let game = new Phaser.Game(config);
@@ -39,6 +39,7 @@ game.settings = {
 }
 
 let highScore = 0;
+let highestScore;
 // localStorage.clear();
 if(localStorage.getItem("highScore")){
     highScore = localStorage.getItem("highScore");
@@ -50,7 +51,7 @@ let roadPosition = 2;
 let roadRight = 4;
 let roadLeft = 1;
 let roadCenter = [0, 121, 322, 556, 759]
-
+let bgMusic;
 //score display
 let scoreConfig = {
     fontFamily: "Courier",
