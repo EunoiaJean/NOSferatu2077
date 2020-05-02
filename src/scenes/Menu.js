@@ -34,19 +34,11 @@ class Menu extends Phaser.Scene {
         this.add.text(centerX, centerY + .5 * textSpacer, 'Press Left or A to see instructions', menuConfig).setOrigin(0.5);
 
         //Show NOS and his bike
-        this.NOS = this.add.image(game.config.width/4, game.config.height/1.5, 'NOS');
+        this.NOS = this.add.image(game.config.width/5, game.config.height/1.5, 'NOS');
         this.NOS.setScale(4);
 
-        this.NOS = this.add.image(game.config.width/1.3, game.config.height/1.2, 'bike');
-        this.NOS.setScale(4);
-
-
-        //Show NOS and his bike
-        this.NOS = this.add.image(game.config.width/4, game.config.height/1.5, 'NOS');
-        this.NOS.setScale(4);
-
-        this.NOS = this.add.image(game.config.width/1.3, game.config.height/1.2, 'bike');
-        this.NOS.setScale(4);
+        this.bike = this.add.image(game.config.width/1.3, game.config.height/1.2, 'bike');
+        this.bike.setScale(4);
 
 
         // define keys

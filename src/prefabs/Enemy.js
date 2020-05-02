@@ -1,7 +1,7 @@
 //Enemy prefab
 class Enemy extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y) {
-        super(scene, x, y, 'enemy');
+    constructor(scene, x, y, texture) {
+        super(scene, x, y, texture);
 
         scene.physics.add.existing(this);
         scene.add.existing(this); //Add object to the existing scene,displayList, updateList
