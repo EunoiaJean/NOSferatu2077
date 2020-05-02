@@ -25,6 +25,7 @@ class Play extends Phaser.Scene {
         this.load.image('barrel', './assets/barrel1.png');
         // this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
         this.load.atlas('barrelAtlas', './assets/barrel_roll.png', './assets/barrel_roll_atlas.json');
+        this.load.atlas('vanAtlas', './assets/van.png', './assets/van_atlas.json');
     }
 
     create() {
@@ -87,11 +88,12 @@ class Play extends Phaser.Scene {
         });
 
         //TimerEvent in charge of spawning enemies after a set spawnDelay, loops indefinitely
-        let firstSpawn = this.time.delayedCall(15000, () => {
+        let firstSpawn = this.time.delayedCall(10000, () => {
             this.enemySpawner = this.time.addEvent({
            delay: game.settings.enemySpawnDelay,
            callback: () => {
-               this.enemy = new Enemy(this, this.position, 0, "enemy");
+               this.enemy = new Enemy(this, this.position, 0, 'vanAtlas', 'barrelvan1.png');
+               this.enemy.play('dropBarrel');
                this.enemyGroup.add(this.enemy, true);
            },
            loop: true,
@@ -107,6 +109,18 @@ class Play extends Phaser.Scene {
                 zeropad: 1,
             }),
             repeat: -1,
+        });
+
+        this.anims.create({
+            key: 'dropBarrel',
+            frameRate: 0.65,
+            frames: this.anims.generateFrameNames('vanAtlas', {
+                prefix: 'barrelvan',
+                start: 1,
+                end: 3,
+                zeropad: 1,
+            }),
+            // repeat: -1,
         });
 
         //ADD COLLISION
@@ -160,14 +174,10 @@ class Play extends Phaser.Scene {
                 this.enemyGroup.getChildren()[i].calledTimer = true;
                 this.pauseTimer = this.time.delayedCall(this.enemyGroup.getChildren()[i].truckPauseTime, () => {
                     this.enemyGroup.getChildren()[i].goingUp = true; //Set goingUp to true so enemy knows it can go up now
-                    this.barrel = new Barrel(this, this.enemyGroup.getChildren()[i].x, this.enemyGroup.getChildren()[i].y, "barrelAtlas", 'barrel1.png'); //Spawn new barrel from enemy
+                    this.barrel = new Barrel(this, this.enemyGroup.getChildren()[i].x, this.enemyGroup.getChildren()[i].y + this.enemyGroup.getChildren()[i].height - 13, "barrelAtlas", 'barrel1.png'); //Spawn new barrel from enemy
                     this.barrel.play('barrelRoll');
                     this.physics.add.existing(this.barrel);
                     this.barrel.body.setVelocityY(game.settings.carSpeed + 75);
-
-                    //this.barrel.anims.add('rolling', this.anims.generateFrameNames('barrel', 1, 3), 5, true);
-                    
-
                     this.barrelGroup.add(this.barrel, true); //Add barrel to barrelArray
                 }, null, this);
             } else if (this.enemyGroup.getChildren()[i].despawn) {
@@ -190,7 +200,7 @@ class Play extends Phaser.Scene {
             }
         }
 
-        //Increase difficulty after set time
+        //Increase difficulty after set time 1
         if (this.clockDisplay.text == game.settings.difficultyIncreaseTime1 && !(this.increasedDifficulty1)) {
             console.log("Difficulty Increase 1");
             this.increasedDifficulty1 = true;
@@ -219,7 +229,8 @@ class Play extends Phaser.Scene {
             this.enemySpawner.reset({
                 delay: game.settings.enemySpawnDelay,
                 callback: () => {
-                    this.enemy = new Enemy(this, this.position, 0, "enemy");
+                    this.enemy = new Enemy(this, this.position, 0, 'vanAtlas', 'barrelvan1.png');
+                    this.enemy.play('dropBarrel');
                     this.enemyGroup.add(this.enemy, true);
                 },
                 loop: true,

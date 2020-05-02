@@ -1,10 +1,10 @@
 {
     "frames": [
         {
-            "filename": "barrel1",
+            "filename": "barrelvan2",
             "frame": {
-                "w": 20,
-                "h": 13,
+                "w": 61,
+                "h": 99,
                 "x": 0,
                 "y": 0
             },
@@ -14,12 +14,12 @@
             }
         },
         {
-            "filename": "barrel2",
+            "filename": "barrelvan1",
             "frame": {
-                "w": 20,
-                "h": 13,
-                "x": 0,
-                "y": 13
+                "w": 61,
+                "h": 93,
+                "x": 61,
+                "y": 0
             },
             "anchor": {
                 "x": 0.5,
@@ -27,12 +27,12 @@
             }
         },
         {
-            "filename": "barrel3",
+            "filename": "barrelvan3",
             "frame": {
-                "w": 20,
-                "h": 13,
-                "x": 0,
-                "y": 26
+                "w": 61,
+                "h": 93,
+                "x": 61,
+                "y": 93
             },
             "anchor": {
                 "x": 0.5,
