@@ -1,4 +1,9 @@
-/*Creative Tilt:
+/*
+Game Name: NOS-Feratu
+Date Finished: 5/3/2020
+Collaborators: Jacob Compton, Eugene Shin, Cole Cota
+
+Creative Tilt:
 A) We keep local storage for the best time(high score) of the player on the browser!
     Also pretty happy with having an enemy that spawns a seperate object and throws it down!
     Also made the background scale to the screen width so that it fits all screens. That was tricky for sure.
