@@ -11,8 +11,9 @@ class Menu extends Phaser.Scene {
 
     create() {
         
-        this.background = this.add.image(game.config.width / 2, game.config.height / 2, 'bg');
-        this.background.setScale(game.config.width / this.background.width);
+        // this.background = this.add.image(game.config.width / 2, (game.config.height / 2), 'bg');
+        this.background = this.add.image(game.config.width / 2, (game.config.height / 2) - 40, 'bg');
+        this.background.setScale(game.config.width / (this.background.width + 90));
 
         if (!mainMenuBGMusic) {
             mainMenuBGMusic = this.sound.add('mainMenuBGMusic');
