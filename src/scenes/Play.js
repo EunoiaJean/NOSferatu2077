@@ -15,18 +15,11 @@ class Play extends Phaser.Scene {
         this.load.image('redCar', './assets/NOScarRed.png');
         this.load.image('blueCar', './assets/NOScarBlue.png');
         this.load.image('yellowCar', './assets/NOScarYellow.png');
-        this.load.image('enemy', './assets/barrelVan1.png');
-
-
-        this.load.image('background', './assets/NOSbackgroundProgress.png');
         this.load.image('bgLeftSide', './assets/NOSbackgroundLeftSideFlipped.png');
         this.load.image('bgMiddle', './assets/NOSbackgroundRoad.png');
         this.load.image('bgRightSide', './assets/NOSbackgroundRightSide.png');
-
-
         this.load.audio('bgMusic', './assets/ToccataTechno.wav');
         this.load.audio('explosion', './assets/explosion.mp3');
-        this.load.image('barrel', './assets/barrel1.png');
         this.load.atlas('barrelAtlas', './assets/barrel_roll.png', './assets/barrel_roll_atlas.json');
         this.load.atlas('vanAtlas', './assets/van.png', './assets/van_atlas.json');
         this.load.atlas('explosionAtlas', './assets/explosion.png', './assets/explosion_atlas.json');
@@ -34,18 +27,17 @@ class Play extends Phaser.Scene {
 
     create() {
         console.log("Current Highscore: " + localStorage.getItem("highScore"));
-        let playing = false;
 
         //Place road
-        this.backgroundRoad = this.add.tileSprite(game.config.width/2, game.config.height/2, 242, game.config.height, "bgMiddle");
+        this.backgroundRoad = this.add.tileSprite(game.config.width / 2, game.config.height / 2, 242, game.config.height, "bgMiddle");
         this.backgroundRoad.scaleX = 2;
 
         //Place tiling left side
-        this.backgroundLeft = this.add.tileSprite(0, 0, game.config.width/2 - 242, game.config.height, "bgLeftSide").setOrigin(0, 0);
+        this.backgroundLeft = this.add.tileSprite(0, 0, game.config.width / 2 - 242, game.config.height, "bgLeftSide").setOrigin(0, 0);
         this.backgroundLeft.setFlipX(true);
 
         //Place tiling right side
-        this.backgroundRight = this.add.tileSprite(game.config.width/2 + 242, 0, game.config.width/2 - 242, game.config.height, "bgRightSide").setOrigin(0, 0);
+        this.backgroundRight = this.add.tileSprite(game.config.width / 2 + 242, 0, game.config.width / 2 - 242, game.config.height, "bgRightSide").setOrigin(0, 0);
 
 
         //Groups to keep track of things and update them
@@ -143,7 +135,7 @@ class Play extends Phaser.Scene {
 
         this.anims.create({
             key: 'explode',
-            frameRate: 3,
+            frameRate: 6,
             frames: this.anims.generateFrameNames('explosionAtlas', {
                 prefix: 'explosion',
                 start: 1,
@@ -171,12 +163,13 @@ class Play extends Phaser.Scene {
             }
             this.add.text(game.config.width / 2, game.config.height / 2, "GAME OVER", scoreConfig).setOrigin(0.5);
             this.add.text(game.config.width / 2, game.config.height / 2 + 64, "Space to Restart or ← for Menu", scoreConfig).setOrigin(0.5);
-            roadPosition = 2;
             if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
+                this.resetSettings();
                 this.scene.restart(this.p1Score);
             } else if (Phaser.Input.Keyboard.JustDown(keyLEFT)) {
                 bgMusic.destroy();
                 bgMusic = null;
+                this.resetSettings();
                 this.scene.start("menuScene");
             }
         }
@@ -237,7 +230,7 @@ class Play extends Phaser.Scene {
         if (this.clockDisplay.text == game.settings.difficultyIncreaseTime1 && !(this.increasedDifficulty1)) {
             console.log("Difficulty Increase 1");
             this.increasedDifficulty1 = true;
-            game.settings.carSpawnDelay = 800;
+            game.settings.carSpawnDelay = 900;
             this.carSpawner.reset({
                 delay: game.settings.carSpawnDelay,
                 callback: () => {
@@ -252,6 +245,7 @@ class Play extends Phaser.Scene {
             console.log("Difficulty Increase 2");
             this.increasedDifficulty2 = true;
             game.settings.carSpeed = 800;
+            game.settings.backgroundScrollSpeed = 15;
         }
 
         //Increase difficulty after set time 3
@@ -275,8 +269,12 @@ class Play extends Phaser.Scene {
     playerEnemyCollision(player, object) {
         let explosionSFX = this.sound.add('explosion', { volume: 0.25 });
         explosionSFX.play();
-        this.explosion = this.add.sprite(this, player.x, player.y, 'explosionAtlas', 'explosion1.png');
+        this.explosion = new Explosion(this, player.x, player.y, 'explosionAtlas', 'explosion1.png');
+        this.explosion.body.setVelocityY(game.settings.carSpeed);
         this.explosion.play('explode');
+        this.explosionDespawnDelay = this.time.delayedCall(500, () => {
+            this.explosion.destroy();
+        }, null, this);
         player.destroy();
         object.destroy();
         this.gameOver = true;
@@ -285,6 +283,12 @@ class Play extends Phaser.Scene {
     EnemyEnemyCollision(enemy1, enemy2) {
         let explosionSFX = this.sound.add('explosion', { volume: 0.25 });
         explosionSFX.play();
+        this.explosion = new Explosion(this, enemy1.x, enemy1.y, 'explosionAtlas', 'explosion1.png');
+        this.explosion.body.setVelocityY(game.settings.carSpeed);
+        this.explosion.play('explode');
+        this.explosionDespawnDelay = this.time.delayedCall(500, () => {
+            this.explosion.destroy();
+        }, null, this);
         enemy1.destroy();
         enemy2.destroy();
     }
@@ -333,5 +337,16 @@ class Play extends Phaser.Scene {
             this.car.body.setVelocityY(game.settings.carSpeed);
             this.carGroup.add(this.car, true);
         }
+    }
+
+    resetSettings() {
+        this.increasedDifficulty1 = false;
+        this.increasedDifficulty2 = false;
+        this.increasedDifficulty3 = false;
+        game.settings.backgroundScrollSpeed = 10;
+        game.settings.carSpeed = 400;
+        game.settings.carSpawnDelay = 1000;
+        game.settings.enemySpawnDelay = 5000;
+        roadPosition = 2;
     }
 }
