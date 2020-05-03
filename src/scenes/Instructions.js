@@ -13,7 +13,6 @@ class Instructions extends Phaser.Scene {
         let menuConfig = {
             fontFamily: "Courier",
             fontSize: "28px",
-            // backgroundColor: "#F3B141",
             color: "#ffffff",
             align: "right",
             padding: {
@@ -27,10 +26,6 @@ class Instructions extends Phaser.Scene {
         let centerX = game.config.width / 2;
         let centerY = game.config.height / 2;
         let textSpacer = 64;
-
-        // this.add.text(centerX, centerY - textSpacer, 'Instruction Scene', menuConfig).setOrigin(0.5);
-        // this.add.text(centerX, centerY + 2 * textSpacer, 'Press Spacebar to Start', menuConfig).setOrigin(0.5);
-        // this.add.text(centerX, centerY + .5 * textSpacer, 'Press Left or A to go back to the menu', menuConfig).setOrigin(0.5);
 
         this.rulesBG = this.add.image(game.config.width/2, game.config.height/2, 'rulesBG');
         this.rulesBG.setScale(game.config.width/this.rulesBG.width);

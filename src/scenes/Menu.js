@@ -5,8 +5,6 @@ class Menu extends Phaser.Scene {
     }
 
     preload() {
-        // this.load.image('NOS', './assets/NOS.png');
-        // this.load.image('bike', './assets/NOSbike.png');
         this.load.image('bg', './assets/NOStitle.png');
         this.load.audio('mainMenuBGMusic', './assets/mainMenuMusic.mp3');
     }
@@ -17,7 +15,6 @@ class Menu extends Phaser.Scene {
         let menuConfig = {
             fontFamily: "Courier",
             fontSize: "28px",
-            // backgroundColor: "#F3B141",
             color: "#ffffff",
             align: "right",
             padding: {
@@ -27,18 +24,8 @@ class Menu extends Phaser.Scene {
             fixedWidth: 0
         }
 
-        //Display menu text
-        let centerX = game.config.width / 2;
-        let centerY = game.config.height / 2;
-        let textSpacer = 64;
-
         this.background = this.add.image(game.config.width / 2, game.config.height / 2, 'bg');
         this.background.setScale(game.config.width / this.background.width);
-
-        this.add.text(centerX, centerY + 2 * textSpacer, 'Press Spacebar to Start', menuConfig).setOrigin(0.5);
-        this.add.text(centerX, centerY + .5 * textSpacer, 'Press Left or A to see instructions', menuConfig).setOrigin(0.5);
-
-
 
         if (!mainMenuBGMusic) {
             mainMenuBGMusic = this.sound.add('mainMenuBGMusic');
