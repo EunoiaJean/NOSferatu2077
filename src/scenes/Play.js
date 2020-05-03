@@ -15,18 +15,11 @@ class Play extends Phaser.Scene {
         this.load.image('redCar', './assets/NOScarRed.png');
         this.load.image('blueCar', './assets/NOScarBlue.png');
         this.load.image('yellowCar', './assets/NOScarYellow.png');
-        this.load.image('enemy', './assets/barrelVan1.png');
-
-
-        this.load.image('background', './assets/NOSbackgroundProgress.png');
         this.load.image('bgLeftSide', './assets/NOSbackgroundLeftSideFlipped.png');
         this.load.image('bgMiddle', './assets/NOSbackgroundRoad.png');
         this.load.image('bgRightSide', './assets/NOSbackgroundRightSide.png');
-
-
         this.load.audio('bgMusic', './assets/ToccataTechno.wav');
         this.load.audio('explosion', './assets/explosion.mp3');
-        this.load.image('barrel', './assets/barrel1.png');
         this.load.atlas('barrelAtlas', './assets/barrel_roll.png', './assets/barrel_roll_atlas.json');
         this.load.atlas('vanAtlas', './assets/van.png', './assets/van_atlas.json');
         this.load.atlas('explosionAtlas', './assets/explosion.png', './assets/explosion_atlas.json');
@@ -34,7 +27,6 @@ class Play extends Phaser.Scene {
 
     create() {
         console.log("Current Highscore: " + localStorage.getItem("highScore"));
-        let playing = false;
 
         //Place road
         this.backgroundRoad = this.add.tileSprite(game.config.width / 2, game.config.height / 2, 242, game.config.height, "bgMiddle");
@@ -143,7 +135,7 @@ class Play extends Phaser.Scene {
 
         this.anims.create({
             key: 'explode',
-            frameRate: 3,
+            frameRate: 6,
             frames: this.anims.generateFrameNames('explosionAtlas', {
                 prefix: 'explosion',
                 start: 1,
@@ -280,7 +272,9 @@ class Play extends Phaser.Scene {
         this.explosion = new Explosion(this, player.x, player.y, 'explosionAtlas', 'explosion1.png');
         this.explosion.body.setVelocityY(game.settings.carSpeed);
         this.explosion.play('explode');
-        // this.explosion.destroy();
+        this.explosionDespawnDelay = this.time.delayedCall(500, () => {
+            this.explosion.destroy();
+        }, null, this);
         player.destroy();
         object.destroy();
         this.gameOver = true;
@@ -289,6 +283,12 @@ class Play extends Phaser.Scene {
     EnemyEnemyCollision(enemy1, enemy2) {
         let explosionSFX = this.sound.add('explosion', { volume: 0.25 });
         explosionSFX.play();
+        this.explosion = new Explosion(this, enemy1.x, enemy1.y, 'explosionAtlas', 'explosion1.png');
+        this.explosion.body.setVelocityY(game.settings.carSpeed);
+        this.explosion.play('explode');
+        this.explosionDespawnDelay = this.time.delayedCall(500, () => {
+            this.explosion.destroy();
+        }, null, this);
         enemy1.destroy();
         enemy2.destroy();
     }

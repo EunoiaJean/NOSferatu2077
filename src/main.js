@@ -33,7 +33,7 @@ game.settings = {
     carSpawnDelay: 1000, //Car spawn delay in ms
     enemySpawnDelay: 5000, //Delay between spawning enemies
     carSpeed: 400,
-    difficultyIncreaseTime1: 15,
+    difficultyIncreaseTime1: 15, //Time in seconds till difficulty increases
     difficultyIncreaseTime2: 30,
     difficultyIncreaseTime3: 60,
 }
@@ -47,12 +47,15 @@ if(localStorage.getItem("highScore")){
 
 //Reserve some keyboard variables
 let keySPACE, keyLEFT, keyRIGHT, keyDOWN, keyUP, keyW, keyA, keyD, keyS;
+//Starting position on the road for NOS
 let roadPosition = 2;
 let roadRight = 4;
 let roadLeft = 1;
 let roadFarRightPos = game.config.width/2 + 184;
 let roadLaneDiff = 122;
+//Positions for each lane, ignoring the 0
 let roadCenter = [0, roadFarRightPos - 3 * roadLaneDiff, roadFarRightPos - 2 * roadLaneDiff, roadFarRightPos - roadLaneDiff, roadFarRightPos];
+//Global music variables so we can play music through scenes
 let bgMusic;
 let mainMenuBGMusic;
 let destroyedMenuMusic = false;

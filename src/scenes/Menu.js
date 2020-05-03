@@ -10,20 +10,7 @@ class Menu extends Phaser.Scene {
     }
 
     create() {
-
-        //menu display
-        let menuConfig = {
-            fontFamily: "Courier",
-            fontSize: "28px",
-            color: "#ffffff",
-            align: "right",
-            padding: {
-                top: 5,
-                bottom: 5,
-            },
-            fixedWidth: 0
-        }
-
+        
         this.background = this.add.image(game.config.width / 2, game.config.height / 2, 'bg');
         this.background.setScale(game.config.width / this.background.width);
 
