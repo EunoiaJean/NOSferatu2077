@@ -19,7 +19,7 @@ class Play extends Phaser.Scene {
         this.load.image('enemy', './assets/barrelVan1.png');
         // this.load.image('enemy2', './assets/starfield.png');
         this.load.image('background', './assets/tempRoad.png');
-        this.load.audio('bgMusic', './assets/ToccataTechno.mp3');
+        this.load.audio('bgMusic', './assets/ToccataTechno.wav');
         this.load.audio('explosion', './assets/explosion.mp3');
         // this.load.image('spear', './assets/starfield.png');
         this.load.image('barrel', './assets/barrel1.png');
