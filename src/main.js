@@ -52,6 +52,8 @@ let roadRight = 4;
 let roadLeft = 1;
 let roadCenter = [0, 121, 322, 556, 759]
 let bgMusic;
+let mainMenuBGMusic;
+let destroyedMenuMusic = false;
 //score display
 let scoreConfig = {
     fontFamily: "Courier",

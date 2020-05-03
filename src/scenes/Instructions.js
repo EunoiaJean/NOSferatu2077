@@ -43,6 +43,8 @@ class Instructions extends Phaser.Scene {
 
     update() {
         if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
+            mainMenuBGMusic.destroy();
+            mainMenuBGMusic = null;
             this.scene.start("playScene");
         }
         if (Phaser.Input.Keyboard.JustDown(keyLEFT) || Phaser.Input.Keyboard.JustDown(keyA)) {

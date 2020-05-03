@@ -46,10 +46,14 @@ class Play extends Phaser.Scene {
         this.barrelGroup = this.add.group({
             runChildUpdate: true
         });
-        this.bgMusic = this.sound.add('bgMusic', { volume: 0.3 });
-        this.bgMusic.play({
-            loop: true,
-        });
+
+        if (!bgMusic) {
+            bgMusic = this.sound.add('bgMusic', { volume: 0.3 });
+            bgMusic.play({
+                loop: true,
+            });
+        }
+
 
         this.p1 = new Player(this, 322, 600);
         //Define keyboard keys
@@ -66,7 +70,7 @@ class Play extends Phaser.Scene {
 
         scoreConfig.fixedWidth = 0;
         this.clockDisplay = this.add.text(game.config.width / 2, 42, "Time: " + this.game.settings.gameTimer, scoreConfig);
-        this.highestScore = this.add.text(game.config.width / 2, 42+64, "Current Highscore: " + localStorage.getItem("highScore"), scoreConfig).setOrigin(0.5);
+        this.highestScore = this.add.text(game.config.width / 2, 42 + 64, "Current Highscore: " + localStorage.getItem("highScore"), scoreConfig).setOrigin(0.5);
         //game over flag
         this.gameOver = false;
 
@@ -90,14 +94,15 @@ class Play extends Phaser.Scene {
         //TimerEvent in charge of spawning enemies after a set spawnDelay, loops indefinitely
         let firstSpawn = this.time.delayedCall(10000, () => {
             this.enemySpawner = this.time.addEvent({
-           delay: game.settings.enemySpawnDelay,
-           callback: () => {
-               this.enemy = new Enemy(this, this.position, 0, 'vanAtlas', 'barrelvan1.png');
-               this.enemy.play('dropBarrel');
-               this.enemyGroup.add(this.enemy, true);
-           },
-           loop: true,
-       }); }, null, this)
+                delay: game.settings.enemySpawnDelay,
+                callback: () => {
+                    this.enemy = new Enemy(this, this.position, 0, 'vanAtlas', 'barrelvan1.png');
+                    this.enemy.play('dropBarrel');
+                    this.enemyGroup.add(this.enemy, true);
+                },
+                loop: true,
+            });
+        }, null, this)
 
         this.anims.create({
             key: 'barrelRoll',
@@ -143,9 +148,10 @@ class Play extends Phaser.Scene {
             this.add.text(game.config.width / 2, game.config.height / 2, "GAME OVER", scoreConfig).setOrigin(0.5);
             this.add.text(game.config.width / 2, game.config.height / 2 + 64, "Space to Restart or ← for Menu", scoreConfig).setOrigin(0.5);
             if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
-                this.bgMusic.destroy();
                 this.scene.restart(this.p1Score);
             } else if (Phaser.Input.Keyboard.JustDown(keyLEFT)) {
+                bgMusic.destroy();
+                bgMusic = null;
                 this.scene.start("menuScene");
             }
         }
