@@ -246,6 +246,15 @@ class Play extends Phaser.Scene {
             this.increasedDifficulty2 = true;
             game.settings.carSpeed = 800;
             game.settings.backgroundScrollSpeed = 15;
+            game.settings.carSpawnDelay = 600;
+            this.carSpawner.reset({
+                delay: game.settings.carSpawnDelay,
+                callback: () => {
+                    this.spawnCar();
+                },
+                loop: true,
+            });
+            this.updateCarVelocities(800);
         }
 
         //Increase difficulty after set time 3
@@ -336,6 +345,12 @@ class Play extends Phaser.Scene {
             this.physics.add.existing(this.car);
             this.car.body.setVelocityY(game.settings.carSpeed);
             this.carGroup.add(this.car, true);
+        }
+    }
+
+    updateCarVelocities(newVelocity){
+        for(let itr = 0; itr < this.carGroup.getLength(); itr++){
+            this.carGroup.getChildren()[itr].setVelocityY(newVelocity);
         }
     }
 
