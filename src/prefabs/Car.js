@@ -12,16 +12,16 @@ class Car extends Phaser.Physics.Arcade.Sprite {
         //Decide what x position to put the car at based on lane
         switch (this.lane) {
             case 1:
-                this.position = 121;
+                this.position = roadCenter[1];
                 break;
             case 2:
-                this.position = 322;
+                this.position = roadCenter[2];
                 break;
             case 3:
-                this.position = 556;
+                this.position = roadCenter[3];
                 break;
             case 4:
-                this.position = 759;
+                this.position = roadCenter[4];
                 break;
             default:
                 console.log("Lane is out of bounds");

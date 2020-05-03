@@ -1,8 +1,9 @@
-//Communicate how to play w/ clear instructions (5)
-//animated character use a texture atlas
-//sound effects
-//delayed event for time
-//
+/*Creative Tilt:
+A) We keep local storage for the best time(high score) of the player on the browser!
+    Also pretty happy with having an enemy that spawns a seperate object and throws it down!
+
+B) All of the art was done by Cole, with a pretty cool aesthetic is I do say so myself. Even found some music to go with the techno vampire theme.
+*/
 
 let config = 
 {
@@ -14,7 +15,7 @@ let config =
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true,
+            debug: false,
             gravity: {
                 x: 0,
                 y: 0
@@ -50,7 +51,12 @@ let keySPACE, keyLEFT, keyRIGHT, keyDOWN, keyUP, keyW, keyA, keyD, keyS;
 let roadPosition = 2;
 let roadRight = 4;
 let roadLeft = 1;
-let roadCenter = [0, 121, 322, 556, 759]
+// let roadCenter = [0, 121, 322, 556, 759];
+// let roadFarRightPos = game.config.width/2 + 184;
+let roadFarRightPos = game.config.width/2 + 184;
+let roadLaneDiff = 122;
+// let roadCenter = [0, game.config.width/2 - 484/4, game.config.width/2 - 484/3, game.config.width/2 - 484/2, game.config.width/2 + 242 - 39.5 - 16];
+let roadCenter = [0, roadFarRightPos - 3 * roadLaneDiff, roadFarRightPos - 2 * roadLaneDiff, roadFarRightPos - roadLaneDiff, roadFarRightPos];
 let bgMusic;
 let mainMenuBGMusic;
 let destroyedMenuMusic = false;

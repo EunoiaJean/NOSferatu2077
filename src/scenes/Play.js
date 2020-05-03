@@ -5,7 +5,6 @@ class Play extends Phaser.Scene {
         this.increasedDifficulty1 = false;
         this.increasedDifficulty2 = false;
         this.increasedDifficulty3 = false;
-
     }
 
     preload() {
@@ -17,22 +16,37 @@ class Play extends Phaser.Scene {
         this.load.image('blueCar', './assets/NOScarBlue.png');
         this.load.image('yellowCar', './assets/NOScarYellow.png');
         this.load.image('enemy', './assets/barrelVan1.png');
-        // this.load.image('enemy2', './assets/starfield.png');
-        this.load.image('background', './assets/tempRoad.png');
+
+
+        this.load.image('background', './assets/NOSbackgroundProgress.png');
+        this.load.image('bgLeftSide', './assets/NOSbackgroundLeftSideFlipped.png');
+        this.load.image('bgMiddle', './assets/NOSbackgroundRoad.png');
+        this.load.image('bgRightSide', './assets/NOSbackgroundRightSide.png');
+
+
         this.load.audio('bgMusic', './assets/ToccataTechno.wav');
         this.load.audio('explosion', './assets/explosion.mp3');
-        // this.load.image('spear', './assets/starfield.png');
         this.load.image('barrel', './assets/barrel1.png');
-        // this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
         this.load.atlas('barrelAtlas', './assets/barrel_roll.png', './assets/barrel_roll_atlas.json');
         this.load.atlas('vanAtlas', './assets/van.png', './assets/van_atlas.json');
+        this.load.atlas('explosionAtlas', './assets/explosion.png', './assets/explosion_atlas.json');
     }
 
     create() {
         console.log("Current Highscore: " + localStorage.getItem("highScore"));
         let playing = false;
-        //Place background
-        this.background = this.add.tileSprite(0, 0, (game.config.width) / 1.75, game.config.height, "background").setOrigin(0, 0);
+
+        //Place road
+        this.backgroundRoad = this.add.tileSprite(game.config.width/2, game.config.height/2, 242, game.config.height, "bgMiddle");
+        this.backgroundRoad.scaleX = 2;
+
+        //Place tiling left side
+        this.backgroundLeft = this.add.tileSprite(0, 0, game.config.width/2 - 242, game.config.height, "bgLeftSide").setOrigin(0, 0);
+        this.backgroundLeft.setFlipX(true);
+
+        //Place tiling right side
+        this.backgroundRight = this.add.tileSprite(game.config.width/2 + 242, 0, game.config.width/2 - 242, game.config.height, "bgRightSide").setOrigin(0, 0);
+
 
         //Groups to keep track of things and update them
         this.carGroup = this.add.group({
@@ -55,7 +69,7 @@ class Play extends Phaser.Scene {
         }
 
 
-        this.p1 = new Player(this, 322, 600);
+        this.p1 = new Player(this, roadCenter[roadPosition], 600);
         //Define keyboard keys
 
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -125,7 +139,17 @@ class Play extends Phaser.Scene {
                 end: 3,
                 zeropad: 1,
             }),
-            // repeat: -1,
+        });
+
+        this.anims.create({
+            key: 'explode',
+            frameRate: 3,
+            frames: this.anims.generateFrameNames('explosionAtlas', {
+                prefix: 'explosion',
+                start: 1,
+                end: 3,
+                zeropad: 1,
+            }),
         });
 
         //ADD COLLISION
@@ -147,6 +171,7 @@ class Play extends Phaser.Scene {
             }
             this.add.text(game.config.width / 2, game.config.height / 2, "GAME OVER", scoreConfig).setOrigin(0.5);
             this.add.text(game.config.width / 2, game.config.height / 2 + 64, "Space to Restart or ← for Menu", scoreConfig).setOrigin(0.5);
+            roadPosition = 2;
             if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
                 this.scene.restart(this.p1Score);
             } else if (Phaser.Input.Keyboard.JustDown(keyLEFT)) {
@@ -156,7 +181,9 @@ class Play extends Phaser.Scene {
             }
         }
         //Scroll background
-        this.background.tilePositionY -= game.settings.backgroundScrollSpeed;
+        this.backgroundRoad.tilePositionY -= game.settings.backgroundScrollSpeed;
+        this.backgroundLeft.tilePositionY -= game.settings.backgroundScrollSpeed;
+        this.backgroundRight.tilePositionY -= game.settings.backgroundScrollSpeed;
 
         if (!this.gameOver) {
             //update sprites here if you want them to pause on game over
@@ -248,10 +275,11 @@ class Play extends Phaser.Scene {
     playerEnemyCollision(player, object) {
         let explosionSFX = this.sound.add('explosion', { volume: 0.25 });
         explosionSFX.play();
+        this.explosion = this.add.sprite(this, player.x, player.y, 'explosionAtlas', 'explosion1.png');
+        this.explosion.play('explode');
         player.destroy();
         object.destroy();
         this.gameOver = true;
-        //play explosion animation
     }
 
     EnemyEnemyCollision(enemy1, enemy2) {
@@ -259,7 +287,6 @@ class Play extends Phaser.Scene {
         explosionSFX.play();
         enemy1.destroy();
         enemy2.destroy();
-        //play explosion animation
     }
 
     bikeExplode(ship, rocket) {
