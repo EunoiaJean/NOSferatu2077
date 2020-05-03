@@ -8,6 +8,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
         this.movingLeft = false;
         this.movingRight = false;
+        roadPosition = 2;
     }
 
 

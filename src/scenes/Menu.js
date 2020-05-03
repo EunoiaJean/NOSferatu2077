@@ -1,11 +1,14 @@
 class Menu extends Phaser.Scene {
     constructor() {
         super("menuScene");
+
     }
 
     preload() {
-        this.load.image('NOS', './assets/NOS.png');
-        this.load.image('bike', './assets/NOSbike.png');
+        // this.load.image('NOS', './assets/NOS.png');
+        // this.load.image('bike', './assets/NOSbike.png');
+        this.load.image('bg', './assets/NOStitle.png');
+        this.load.audio('mainMenuBGMusic', './assets/mainMenuMusic.mp3');
     }
 
     create() {
@@ -29,17 +32,20 @@ class Menu extends Phaser.Scene {
         let centerY = game.config.height / 2;
         let textSpacer = 64;
 
-        this.add.text(centerX, centerY - textSpacer, 'NOS-Feratu', menuConfig).setOrigin(0.5);
+        this.background = this.add.image(game.config.width / 2, game.config.height / 2, 'bg');
+        this.background.setScale(game.config.width / this.background.width);
+
         this.add.text(centerX, centerY + 2 * textSpacer, 'Press Spacebar to Start', menuConfig).setOrigin(0.5);
         this.add.text(centerX, centerY + .5 * textSpacer, 'Press Left or A to see instructions', menuConfig).setOrigin(0.5);
 
-        //Show NOS and his bike
-        this.NOS = this.add.image(game.config.width/5, game.config.height/1.5, 'NOS');
-        this.NOS.setScale(4);
 
-        this.bike = this.add.image(game.config.width/1.3, game.config.height/1.2, 'bike');
-        this.bike.setScale(4);
 
+        if (!mainMenuBGMusic) {
+            mainMenuBGMusic = this.sound.add('mainMenuBGMusic');
+            mainMenuBGMusic.play({
+                loop: true,
+            });
+        }
 
         // define keys
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
@@ -54,6 +60,8 @@ class Menu extends Phaser.Scene {
 
     update() {
         if (Phaser.Input.Keyboard.JustDown(keySPACE)) {
+            mainMenuBGMusic.destroy();
+            mainMenuBGMusic = null;
             this.scene.start("playScene");
         }
         if (Phaser.Input.Keyboard.JustDown(keyLEFT) || Phaser.Input.Keyboard.JustDown(keyA)) {
