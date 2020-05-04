@@ -21,13 +21,13 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
                 this.position = roadCenter[1];
                 break;
             case 2:
-                this.position = roadCenter[1];
+                this.position = roadCenter[2];
                 break;
             case 3:
-                this.position = roadCenter[1];
+                this.position = roadCenter[3];
                 break;
             case 4:
-                this.position = roadCenter[1];
+                this.position = roadCenter[4];
                 break;
             default:
                 console.log("Lane is out of bounds");
@@ -35,6 +35,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         }
 
         this.x = this.position;
+        console.log("Enemy Position is " + this.x);
     }
 
     update() {
